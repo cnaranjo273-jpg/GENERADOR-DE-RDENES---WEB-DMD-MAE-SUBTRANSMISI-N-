@@ -1,0 +1,670 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=yes">
+    <title>WEB DMD MAE - Generador de Órdenes (Subtransmisión EEQ)</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            background: linear-gradient(145deg, #eef2f7 0%, #d9e0e8 100%);
+            font-family: 'Segoe UI', Roboto, 'Helvetica Neue', sans-serif;
+            padding: 30px 20px;
+            color: #1a2c3e;
+        }
+
+        .eeq-container {
+            max-width: 1200px;
+            margin: 0 auto;
+            background: #ffffff;
+            border-radius: 32px;
+            box-shadow: 0 20px 35px -12px rgba(0, 32, 64, 0.25);
+            overflow: hidden;
+            border: 1px solid rgba(0, 86, 149, 0.2);
+        }
+
+        .eeq-header {
+            background: linear-gradient(95deg, #003057 0%, #005c8a 100%);
+            padding: 1.5rem 2rem;
+            border-bottom: 5px solid #6cbf3e;
+        }
+
+        .eeq-header h1 {
+            color: white;
+            font-size: 1.9rem;
+            font-weight: 600;
+            letter-spacing: -0.3px;
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            flex-wrap: wrap;
+        }
+
+        .eeq-header h1 small {
+            font-size: 0.9rem;
+            font-weight: 400;
+            background: rgba(255,255,255,0.18);
+            padding: 4px 12px;
+            border-radius: 40px;
+        }
+
+        .eeq-sub {
+            color: rgba(255,255,255,0.85);
+            margin-top: 8px;
+            font-size: 0.9rem;
+            display: flex;
+            gap: 20px;
+            flex-wrap: wrap;
+        }
+
+        .eeq-body {
+            padding: 2rem;
+        }
+
+        .section-card {
+            background: #f9fbfd;
+            border-radius: 24px;
+            padding: 1.5rem;
+            margin-bottom: 1.5rem;
+            border: 1px solid #e2edf2;
+            box-shadow: 0 2px 6px rgba(0,0,0,0.02);
+        }
+
+        .section-title {
+            font-size: 1.3rem;
+            font-weight: 700;
+            color: #003057;
+            border-left: 6px solid #6cbf3e;
+            padding-left: 1rem;
+            margin-bottom: 1.2rem;
+        }
+
+        .radio-group {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 1.2rem;
+            margin: 0.5rem 0;
+            align-items: center;
+        }
+
+        .radio-option {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            background: white;
+            padding: 8px 20px;
+            border-radius: 60px;
+            border: 1px solid #cbdbe2;
+            cursor: pointer;
+            transition: all 0.2s;
+            font-weight: 500;
+        }
+
+        .radio-option:hover {
+            background: #eef3fc;
+            border-color: #005c8a;
+        }
+
+        input[type="radio"], input[type="text"], textarea, select {
+            accent-color: #6cbf3e;
+        }
+
+        input, textarea, select {
+            border: 1px solid #cbd5e1;
+            border-radius: 20px;
+            padding: 10px 18px;
+            font-size: 0.95rem;
+            width: 100%;
+            font-family: inherit;
+            transition: 0.2s;
+        }
+
+        select {
+            cursor: pointer;
+            background-color: white;
+            max-width: 400px;
+        }
+
+        input:focus, textarea:focus, select:focus {
+            outline: none;
+            border-color: #005c8a;
+            box-shadow: 0 0 0 3px rgba(0,92,138,0.2);
+        }
+
+        .search-select {
+            width: 100%;
+            max-width: 500px;
+        }
+
+        .btn-primary {
+            background: #003057;
+            color: white;
+            border: none;
+            padding: 12px 28px;
+            border-radius: 40px;
+            font-weight: 700;
+            font-size: 1rem;
+            cursor: pointer;
+            transition: 0.2s;
+            display: inline-flex;
+            align-items: center;
+            gap: 10px;
+        }
+
+        .btn-primary:hover {
+            background: #004b7a;
+            transform: translateY(-1px);
+            box-shadow: 0 8px 18px rgba(0,48,73,0.2);
+        }
+
+        .btn-secondary {
+            background: #eef2f7;
+            border: 1px solid #bdc4d0;
+            color: #1e2f3e;
+            padding: 8px 20px;
+            border-radius: 40px;
+            font-weight: 500;
+            cursor: pointer;
+            transition: 0.2s;
+        }
+
+        .btn-secondary:hover {
+            background: #e2e8f0;
+        }
+
+        .result-box {
+            background: #ffffff;
+            border-radius: 28px;
+            border: 1px solid #dce5ec;
+            padding: 1.5rem;
+            margin-top: 1.5rem;
+            box-shadow: 0 8px 20px rgba(0,0,0,0.03);
+        }
+
+        .result-line {
+            padding: 10px 0;
+            border-bottom: 1px solid #e9edf2;
+            display: flex;
+            flex-wrap: wrap;
+            gap: 10px;
+            font-size: 1rem;
+        }
+
+        .result-label {
+            font-weight: 700;
+            min-width: 160px;
+            color: #003057;
+        }
+
+        .result-value {
+            color: #1e2f3e;
+            word-break: break-word;
+            flex: 1;
+        }
+
+        .badge-eeq {
+            background: #6cbf3e20;
+            color: #2b6e1a;
+            padding: 4px 12px;
+            border-radius: 50px;
+            font-size: 0.75rem;
+            font-weight: 600;
+            display: inline-block;
+            margin-top: 8px;
+        }
+
+        .selected-info {
+            background: #e8f0fe;
+            padding: 10px 15px;
+            border-radius: 12px;
+            margin-top: 10px;
+            font-size: 0.9rem;
+            color: #003057;
+        }
+
+        .required {
+            color: #dc2626;
+            margin-left: 4px;
+        }
+
+        footer {
+            background: #f2f5f9;
+            text-align: center;
+            padding: 1rem;
+            font-size: 0.8rem;
+            color: #4a627a;
+            border-top: 1px solid #e2e8f0;
+        }
+
+        @media (max-width: 680px) {
+            .eeq-body { padding: 1rem; }
+            .section-card { padding: 1rem; }
+            .result-label { min-width: 120px; }
+        }
+    </style>
+</head>
+<body>
+<div class="eeq-container">
+    <div class="eeq-header">
+        <h1>
+            GENERADOR DE ÓRDENES - WEB DMD MAE 
+            <small>Subtransmisión EEQ</small>
+        </h1>
+        <div class="eeq-sub">
+            <span>Generación según normativa DMD</span>
+        </div>
+    </div>
+
+    <div class="eeq-body">
+        <form id="ordenForm">
+            <div class="section-card">
+                <div class="section-title">1. Condición de red <span class="required">*</span></div>
+                <div class="radio-group">
+                    <label class="radio-option"><input type="radio" name="condicion" value="Trabajo Desenergizado" checked> Trabajo Desenergizado</label>
+                    <label class="radio-option"><input type="radio" name="condicion" value="Trabajo Energizado"> Trabajo Energizado</label>
+                </div>
+            </div>
+            <div class="section-card" id="docSeguridadCard">
+                <div class="section-title">2. Documento de Seguridad <span class="required">*</span></div>
+                <div id="docSeguridadOptions"></div>
+            </div>
+            <div class="section-card">
+                <div class="section-title">3. Técnico Responsable <span class="required">*</span></div>
+                <select id="responsableSelect" style="max-width: 400px;">
+                    <option value="">-- Seleccione un responsable --</option>
+                    <option value="0979171760 POLO CARRILLO">0979171760 POLO CARRILLO</option>
+                    <option value="0984023640 MARIA MELO">0984023640 MARIA MELO</option>
+                    <option value="0983895904 JUAN CARRERA">0983895904 JUAN CARRERA</option>
+                    <option value="0998881959 DANIEL MARIN">0998881959 DANIEL MARIN</option>
+                    <option value="0994834576 JORGE AYO">0994834576 JORGE AYO</option>
+                </select>
+            </div>
+            <div class="section-card">
+                <div class="section-title">4. Tipo de instalación <span class="required">*</span></div>
+                <div class="radio-group">
+                    <label class="radio-option"><input type="radio" name="tipoInstalacion" value="SED" checked> Subestación Distribución (SED)</label>
+                    <label class="radio-option"><input type="radio" name="tipoInstalacion" value="LST"> Línea de subtransmisión (LST)</label>
+                </div>
+                <div id="instalacionDinamica" style="margin-top: 20px;"></div>
+            </div>
+            <div class="section-card">
+                <div class="section-title">5. Actividad normada <span class="required">*</span></div>
+                <div id="actividadesContainer"></div>
+            </div>
+            <div class="section-card">
+                <div class="section-title">6. Propósito (OT SGM) <span class="required">*</span></div>
+                <input type="text" id="numOT" placeholder="Ej: 20546" style="max-width: 280px;">
+                <div class="badge-eeq" style="margin-top: 8px;">Formato: Categoría_Actividad OT-Número</div>
+            </div>
+            <div class="section-card">
+                <div class="section-title">7. Continuo / Diario <span class="required">*</span></div>
+                <div class="radio-group">
+                    <label class="radio-option"><input type="radio" name="periodicidad" value="Diario" checked> Diario (mismo día)</label>
+                    <label class="radio-option"><input type="radio" name="periodicidad" value="Continuo"> Continuo (varios días)</label>
+                </div>
+            </div>
+            <div class="section-card">
+                <div class="section-title">8. Detalles <span class="required">*</span></div>
+                <div style="margin-bottom: 12px;">
+                    <label>Horas retraso telecom (RTEL):</label>
+                    <input type="text" id="rtel" placeholder="0,0" style="max-width: 150px;">
+                </div>
+                <div>
+                    <label>Descripción operativa detallada:</label>
+                    <textarea id="descLarga" rows="2" placeholder="Ej: Inspección termográfica y limpieza de aisladores" style="width:100%; max-width: 600px;"></textarea>
+                </div>
+            </div>
+            <div class="section-card">
+                <div class="section-title">9. Trabajo de emergencia</div>
+                <div class="radio-group">
+                    <label class="radio-option"><input type="radio" name="emergencia" value="MARCAR CASILLA con un visto (Sí)"> Sí (menos de 72h)</label>
+                    <label class="radio-option"><input type="radio" name="emergencia" value="DESMARCAR CASILLA (Dejar en blanco)" checked> No</label>
+                </div>
+            </div>
+
+            <div style="display: flex; gap: 15px; flex-wrap: wrap; justify-content: space-between; align-items: center; margin-bottom: 20px;">
+                <button type="button" id="generarBtn" class="btn-primary">GENERAR ORDEN</button>
+                <button type="button" id="resetBtn" class="btn-secondary">RESTABLECER</button>
+            </div>
+        </form>
+        <div id="resultadoPanel" class="result-box" style="display: none;">
+            <div class="section-title" style="border-left-color: #6cbf3e; margin-bottom: 0.5rem;">ORDEN VALIDADA</div>
+            <div id="resultadoDetalles"></div>
+        </div>
+    </div>
+    <footer>
+    </footer>
+</div>
+
+<script>
+    const subestaciones_list = [
+        { codigo: "1", nombre: "14_01_OLIMPICO" },
+        { codigo: "01", nombre: "14_01_OLIMPICO" },
+        { codigo: "2", nombre: "14_02_LULUNCOTO" },
+        { codigo: "02", nombre: "14_02_LULUNCOTO" },
+        { codigo: "3", nombre: "14_03_BARRIO NUEVO" },
+        { codigo: "03", nombre: "14_03_BARRIO NUEVO" },
+        { codigo: "4", nombre: "14_04_CHIMBACALLE" },
+        { codigo: "04", nombre: "14_04_CHIMBACALLE" },
+        { codigo: "5", nombre: "14_05_CHILIBULO" },
+        { codigo: "05", nombre: "14_05_CHILIBULO" },
+        { codigo: "6", nombre: "14_06_ESCUELA SUCRE" },
+        { codigo: "06", nombre: "14_06_ESCUELA SUCRE" },
+        { codigo: "7", nombre: "14_07_SAN ROQUE" },
+        { codigo: "07", nombre: "14_07_SAN ROQUE" },
+        { codigo: "8", nombre: "14_08_LA MARIN" },
+        { codigo: "08", nombre: "14_08_LA MARIN" },
+        { codigo: "9", nombre: "14_09_MIRAFLORES" },
+        { codigo: "09", nombre: "14_09_MIRAFLORES" },
+        { codigo: "10", nombre: "14_10_DIEZ VIEJA" },
+        { codigo: "11", nombre: "14_11_BELISARIO QUEVEDO" },
+        { codigo: "12", nombre: "14_12_LA FLORESTA" },
+        { codigo: "13", nombre: "14_13_GRANDA CENTENO" },
+        { codigo: "14", nombre: "14_14_GUALO" },
+        { codigo: "15", nombre: "14_15_EL BOSQUE" },
+        { codigo: "16", nombre: "14_16_RIO COCA" },
+        { codigo: "17", nombre: "14_17_ANDALUCIA" },
+        { codigo: "18", nombre: "14_18_CRISTIANIA" },
+        { codigo: "19", nombre: "14_19_COTOCOLLAO" },
+        { codigo: "20", nombre: "14_20_SUR" },
+        { codigo: "21", nombre: "14_21_EPICLACHIMA" },
+        { codigo: "22", nombre: "14_22_SAN ANTONIO" },
+        { codigo: "23", nombre: "14_23_CONOCOTO" },
+        { codigo: "24", nombre: "14_24_LA CAROLINA" },
+        { codigo: "25", nombre: "14_25_SAN PABLO" },
+        { codigo: "26", nombre: "14_26_ALANGASI" },
+        { codigo: "27", nombre: "14_27_SAN RAFAEL" },
+        { codigo: "28", nombre: "14_28_INAQUITO" },
+        { codigo: "29", nombre: "14_29_CUMBAYA" },
+        { codigo: "30", nombre: "14_30_PLATAFORMA FINANCIERA" },
+        { codigo: "31", nombre: "14_31_TABABELA" },
+        { codigo: "32", nombre: "14_32_DIEZ NUEVA" },
+        { codigo: "33", nombre: "14_33_AEROPUERTO" },
+        { codigo: "36", nombre: "14_36_TUMBACO" },
+        { codigo: "37", nombre: "14_37_SANTA ROSA" },
+        { codigo: "38", nombre: "14_38_NORTE" },
+        { codigo: "39", nombre: "14_39_VICENTINA" },
+        { codigo: "41", nombre: "14_41_SELVA ALEGRE" },
+        { codigo: "42", nombre: "14_42_MOVIL PAPALLACTA" },
+        { codigo: "46", nombre: "14_46_INGA BAJO" },
+        { codigo: "48", nombre: "14_48_MIRADOR ALTO" },
+        { codigo: "49", nombre: "14_49_LOS BANCOS" },
+        { codigo: "51", nombre: "14_51_PARQUE BICENTENARIO" },
+        { codigo: "53", nombre: "14_53_PEREZ GUERRERO" },
+        { codigo: "55", nombre: "14_55_SANGOLQUI" },
+        { codigo: "57", nombre: "14_57_POMASQUI" },
+        { codigo: "58", nombre: "14_58_QUINCHE" },
+        { codigo: "59", nombre: "14_59_EUGENIO ESPEJO" },
+        { codigo: "63", nombre: "14_63_BATAN ALTO" },
+        { codigo: "70", nombre: "14_70_MOVIL" },
+        { codigo: "73", nombre: "14_73_EL OBRAJE" },
+        { codigo: "80", nombre: "14_80_CUMBAYA" },
+        { codigo: "81", nombre: "14_81_ESTACION TERRENA" },
+        { codigo: "82", nombre: "14_82_GUANGOPOLO TERMICA" },
+        { codigo: "84", nombre: "14_84_GUANGOPOLO HIDRAULICA" },
+        { codigo: "86", nombre: "14_NAYON" },
+        { codigo: "88", nombre: "14_88_PASOCHOA" },
+        { codigo: "ADE", nombre: "14_ADELCA 138KV" },
+        { codigo: "CAR", nombre: "14_EL CARMEN" }
+    ];
+
+    const lineas_lst = [
+        "14_ST_CHILIBULO - SELVA ALEGRE", "14_ST_SAN ROQUE - BARRIO NUEVO",
+        "14_ST_MIRAFLORES - SELVA ALEGRE", "14_ST_DIEZ VIEJA - PEREZ GUERRERO",
+        "14_ST_GRANDA CENTENO - PLATAFORMA FINANCIERA", "14_ST_RIO COCA - NORTE",
+        "14_ST_COTOCOLLAO - EL BOSQUE", "14_ST_COTOCOLLAO - LOS BANCOS",
+        "14_ST_SUR - CHIMBACALLE", "14_ST_SUR - ESCUELA SUCRE - LA MARIN",
+        "14_ST_SUR - GUANGOPOLO HIDRAULICA", "14_ST_SUR - GUANGOPOLO TERMICA",
+        "14_ST_EPICLACHIMA - BARRIO NUEVO", "14_ST_EPICLACHIMA - SUR",
+        "14_ST_ET_IBARRA", "14_ST_ALANGASI - EL CARMEN",
+        "14_ST_SAN RAFAEL - SANGOLQUI", "14_ST_INAQUITO - NORTE",
+        "14_ST_PLATAFORMA FINANCIERA - IÑAQUITO", "14_ST_TABABELA - QUINCHE",
+        "14_ST_SANTA ROSA - MACHACHI", "14_ST_SANTA ROSA - SANGOLQUI",
+        "14_ST_SANTA ROSA 2 - EL OBRAJE", "14_ST_SANTA ROSA 2 - EUGENIO ESPEJO",
+        "14_ST_SANTA ROSA - SAN RAFAEL", "14_ST_SANTA ROSA - EPICLACHIMA #1",
+        "14_ST_SANTA ROSA - EPICLACHIMA #2", "14_ST_NORTE - VICENTINA",
+        "14_ST_NORTE - CUMBAYA 1", "14_ST_NORTE - CUMBAYA 2",
+        "14_ST_00_VICENTINA - DIEZ VIEJA", "14_ST_00_VICENTINA - GUALO",
+        "14_ST_00_VICENTINA - CONOCOTO", "14_ST_00_VICENTINA - SAN PABLO",
+        "14_ST_00_VICENTINA - VICENTINA T1", "14_ST_00_VICENTINA - VICENTINA T2",
+        "14_ST_00_VICENTINA - LA FLORESTA", "14_ST_00_VICENTINA - PARQUE VICENTENARIO",
+        "14_ST_VICENTINA - PEREZ GUERERO", "14_ST_VICENTINA - SUR",
+        "14_ST_VICENTINA - DIEZ NUEVA", "14_ST_VICENTINA - NORTE",
+        "14_ST_SELVA ALEGRE - COTOCOLLAO", "14_ST_SELVA ALEGRE - SAN ROQUE",
+        "14_ST_SELVA ALEGRE - BELISARIO QUEVEDO", "14_ST_SELVA ALEGRE - GRANDA CENTENO",
+        "14_ST_SELVA ALEGRE - RIO COCA", "14_ST_INGA BAJO - TABABELA",
+        "14_ST_MIRADOR ALTO - CONOCOTO", "14_ST_ET_C.H PALMIRA_LOS BANCOS",
+        "14_ST_ET_SANTO DOMINGO_LOS BANCOS", "14_ST_PEREZ GUERRERO - MIRAFLORES",
+        "14_ST_POMASQUI - CRISTIANIA", "14_ST_POMASQUI - SELVA ALEGRE",
+        "14_ST_EUGENIO ESPEJO - SELVA ALEGRE", "14_ST_CUMBAYA - TUMBACO",
+        "14_ST_CUMBAYA- NAYON", "14_ST_GUANGOPOLO TERMICA - SAN RAFAEL",
+        "14_ST_GUANGOPOLO TERMICA - VICENTINA", "14_ST_GUANGOPOLO HIDRAULICA - ESTACION TERRENA",
+        "14_ST_GUANGOPOLO HIDRAULICA - GUANGOPOLO TERMICA", "14_ST_PASOCHOA - SANGOLQUI",
+        "14_ST_NAYON - AEROPUERTO", "14_ST_00_EL INGA - ALANGASI",
+        "14_ST_00_EL INGA - INGA BAJO", "14_ST_00_EL INGA - QUINCHE",
+        "14_ST_00_EL INGA - RECUPERADORA", "14_ST_00_POMASQUI - COTOCOLLAO",
+        "14_ST_00_POMASQUI - GUALO", "14_ST_00_POMASQUI - PARQUE BICENTENARIO",
+        "14_ST_00_POMASQUI - POMASQUI", "14_ST_00_POMASQUI - SAN ANTONIO",
+        "14_ST_00_SANTA ROSA - CHILIBULO", "14_ST_00_SANTA ROSA - EL CARMEN",
+        "14_ST_00_SANTA ROSA - MIRADOR ALTO", "14_ST_00_SANTA ROSA - SANTA ROSA 2"
+    ];
+
+    let currentCompany = "";
+    let currentCategoria = "SED";
+
+    function actualizarDocSeguridad() {
+        const condicion = document.querySelector('input[name="condicion"]:checked').value;
+        const container = document.getElementById("docSeguridadOptions");
+        if (condicion === "Trabajo Desenergizado") {
+            container.innerHTML = `
+                <div class="radio-group">
+                    <label class="radio-option"><input type="radio" name="docSeguridad" value="Trabajos con puesta a tierra" checked> Trabajos con puesta a tierra</label>
+                    <label class="radio-option"><input type="radio" name="docSeguridad" value="Trabajos sin puesta a tierra"> Trabajos sin puesta a tierra</label>
+                </div>
+            `;
+        } else {
+            container.innerHTML = `
+                <div class="radio-group">
+                    <label class="radio-option"><input type="radio" name="docSeguridad" value="Permiso Trabajo Red Aérea" checked> Permiso Trabajo Red Aérea</label>
+                    <label class="radio-option"><input type="radio" name="docSeguridad" value="Permiso Trabajo Red Subterránea"> Permiso Trabajo Red Subterránea</label>
+                </div>
+            `;
+        }
+    }
+
+    function actualizarActividades() {
+        const tipo = document.querySelector('input[name="tipoInstalacion"]:checked').value;
+        const container = document.getElementById("actividadesContainer");
+        if (tipo === "SED") {
+            container.innerHTML = `
+                <div class="radio-group">
+                    <label class="radio-option"><input type="radio" name="actividad" value="DESB" checked> Desbroce (DESB)</label>
+                    <label class="radio-option"><input type="radio" name="actividad" value="MPTG"> Predictivo (MPTG)</label>
+                    <label class="radio-option"><input type="radio" name="actividad" value="MSED"> Mantenimiento Equipamiento SED (MSED)</label>
+                </div>
+            `;
+        } else {
+            container.innerHTML = `
+                <div class="radio-group">
+                    <label class="radio-option"><input type="radio" name="actividad" value="DESB" checked> Desbroce (DESB)</label>
+                    <label class="radio-option"><input type="radio" name="actividad" value="TMGF"> Predictivo (TMGF)</label>
+                    <label class="radio-option"><input type="radio" name="actividad" value="MLST"> Mantenimiento Estructuras LST (MLST)</label>
+                </div>
+            `;
+        }
+    }
+
+    function renderizarSelectorInstalacion() {
+        const tipo = document.querySelector('input[name="tipoInstalacion"]:checked').value;
+        const divDinamico = document.getElementById("instalacionDinamica");
+        
+        if (tipo === "SED") {
+            currentCategoria = "SED";
+            const subestacionesUnicas = [...new Map(subestaciones_list.map(item => [item.nombre, item])).values()];
+            
+            divDinamico.innerHTML = `
+                <label style="font-weight:600;">Buscar Subestación:</label>
+                <input type="text" id="subestacionSearch" list="subestacionesList" class="search-select" placeholder="Escriba para buscar...">
+                <datalist id="subestacionesList">
+                    ${subestacionesUnicas.map(se => `<option value="${se.nombre}">${se.nombre} (Código: ${se.codigo})</option>`).join('')}
+                </datalist>
+                <div id="subEstatus" class="selected-info" style="margin-top: 10px;">
+                    No se ha seleccionado ninguna subestación
+                </div>
+            `;
+            
+            const searchInput = document.getElementById("subestacionSearch");
+            if (searchInput) {
+                searchInput.addEventListener("change", function() {
+                    const seleccionado = this.value;
+                    const existe = subestacionesUnicas.find(se => se.nombre === seleccionado);
+                    if (existe) {
+                        currentCompany = seleccionado;
+                        document.getElementById("subEstatus").innerHTML = `Subestación seleccionada: ${currentCompany}`;
+                        document.getElementById("subEstatus").style.background = "#d4edda";
+                    } else if (seleccionado === "") {
+                        currentCompany = "";
+                        document.getElementById("subEstatus").innerHTML = `No se ha seleccionado ninguna subestación`;
+                        document.getElementById("subEstatus").style.background = "#e8f0fe";
+                    }
+                });
+            }
+            currentCompany = "";
+        } else {
+            currentCategoria = "LST";
+            divDinamico.innerHTML = `
+                <label style="font-weight:600;">Buscar Línea de Subtransmisión:</label>
+                <input type="text" id="lineaSearch" list="lineasList" class="search-select" placeholder="Escriba para buscar...">
+                <datalist id="lineasList">
+                    ${lineas_lst.map(linea => `<option value="${linea}">${linea}</option>`).join('')}
+                </datalist>
+                <div id="lineaEstatus" class="selected-info" style="margin-top: 10px;">
+                    No se ha seleccionado ninguna línea
+                </div>
+            `;
+            
+            const searchInput = document.getElementById("lineaSearch");
+            if (searchInput) {
+                searchInput.addEventListener("change", function() {
+                    const seleccionado = this.value;
+                    if (lineas_lst.includes(seleccionado)) {
+                        currentCompany = seleccionado;
+                        document.getElementById("lineaEstatus").innerHTML = `Línea seleccionada: ${currentCompany}`;
+                        document.getElementById("lineaEstatus").style.background = "#d4edda";
+                    } else if (seleccionado === "") {
+                        currentCompany = "";
+                        document.getElementById("lineaEstatus").innerHTML = `No se ha seleccionado ninguna línea`;
+                        document.getElementById("lineaEstatus").style.background = "#e8f0fe";
+                    } else {
+                        alert("Por favor, seleccione una línea de la lista desplegable.");
+                        this.value = "";
+                    }
+                });
+            }
+            currentCompany = "";
+        }
+    }
+
+    function validarCampos() {
+        const numOT = document.getElementById("numOT").value.trim();
+        const rtel = document.getElementById("rtel").value.trim();
+        const descLarga = document.getElementById("descLarga").value.trim();
+        const responsable = document.getElementById("responsableSelect").value;
+        
+        if (!responsable) {
+            alert("Por favor, seleccione un técnico responsable.");
+            return false;
+        }
+        if (!currentCompany) {
+            alert("Por favor, seleccione una subestación o línea de transmisión.");
+            return false;
+        }
+        if (!numOT) {
+            alert("Por favor, ingrese el número de orden SGM.");
+            return false;
+        }
+        if (!rtel) {
+            alert("Por favor, ingrese las horas de retraso por telecomunicaciones (RTEL).");
+            return false;
+        }
+        if (!descLarga) {
+            alert("Por favor, ingrese una descripción operativa detallada.");
+            return false;
+        }
+        return true;
+    }
+
+    function generarOrden() {
+        if (!validarCampos()) return;
+        
+        const condicion = document.querySelector('input[name="condicion"]:checked').value;
+        const docSeguridadElem = document.querySelector('input[name="docSeguridad"]:checked');
+        const docSeguridad = docSeguridadElem ? docSeguridadElem.value : "Trabajos con puesta a tierra";
+        const responsable = document.getElementById("responsableSelect").value;
+        const periodicidad = document.querySelector('input[name="periodicidad"]:checked').value;
+        const emergencia = document.querySelector('input[name="emergencia"]:checked').value;
+        const numOT = document.getElementById("numOT").value.trim();
+        const rtel = document.getElementById("rtel").value.trim();
+        const descLarga = document.getElementById("descLarga").value.trim();
+        const actividadElem = document.querySelector('input[name="actividad"]:checked');
+        const actividad = actividadElem ? actividadElem.value : "DESB";
+        const categoria = currentCategoria;
+        const company = currentCompany;
+        
+        const purpose = `${categoria}_${actividad} OT-${numOT}`;
+        const details = `1.RTEL_${rtel} 2.${descLarga}`;
+
+        const resultDiv = document.getElementById("resultadoDetalles");
+        resultDiv.innerHTML = `
+            <div class="result-line"><span class="result-label">Cond. Trabajo:</span><span class="result-value">${condicion}</span></div>
+            <div class="result-line"><span class="result-label">Doc. Seguridad:</span><span class="result-value">${docSeguridad}</span></div>
+            <div class="result-line"><span class="result-label">Empresa / Topología:</span><span class="result-value">${company}</span></div>
+            <div class="result-line"><span class="result-label">Responsable:</span><span class="result-value">${responsable}</span></div>
+            <div class="result-line"><span class="result-label">Continuo/diario:</span><span class="result-value">${periodicidad}</span></div>
+            <div class="result-line"><span class="result-label">Propósito:</span><span class="result-value">${purpose}</span></div>
+            <div class="result-line"><span class="result-label">Detalles:</span><span class="result-value">${details}</span></div>
+            <div class="result-line"><span class="result-label">Trab. emergencia:</span><span class="result-value">${emergencia}</span></div>
+        `;
+        document.getElementById("resultadoPanel").style.display = "block";
+        document.getElementById("resultadoPanel").scrollIntoView({ behavior: "smooth", block: "start" });
+    }
+
+    function resetFormulario() {
+        document.querySelector('input[name="condicion"][value="Trabajo Desenergizado"]').checked = true;
+        document.getElementById("responsableSelect").value = "";
+        document.querySelector('input[name="tipoInstalacion"][value="SED"]').checked = true;
+        document.querySelector('input[name="periodicidad"][value="Diario"]').checked = true;
+        document.querySelector('input[name="emergencia"][value="DESMARCAR CASILLA (Dejar en blanco)"]').checked = true;
+        document.getElementById("numOT").value = "";
+        document.getElementById("rtel").value = "";
+        document.getElementById("descLarga").value = "";
+        
+        actualizarDocSeguridad();
+        renderizarSelectorInstalacion();
+        actualizarActividades();
+        
+        currentCompany = "";
+        currentCategoria = "SED";
+        document.getElementById("resultadoPanel").style.display = "none";
+    }
+
+    document.getElementById("generarBtn").addEventListener("click", generarOrden);
+    document.getElementById("resetBtn").addEventListener("click", resetFormulario);
+    
+    document.querySelectorAll('input[name="condicion"]').forEach(r => r.addEventListener("change", actualizarDocSeguridad));
+    document.querySelectorAll('input[name="tipoInstalacion"]').forEach(r => r.addEventListener("change", () => {
+        renderizarSelectorInstalacion();
+        actualizarActividades();
+    }));
+
+    actualizarDocSeguridad();
+    renderizarSelectorInstalacion();
+    actualizarActividades();
+</script>
+</body>
+</html>

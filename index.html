@@ -186,13 +186,16 @@
             font-weight: 500;
             cursor: pointer;
             transition: 0.2s;
+            display: inline-flex;
+            align-items: center;
+            gap: 8px;
         }
 
         .btn-copiar:hover {
             background: #6cbf3e40;
             transform: translateY(-1px);
         }
-            
+
         .result-box {
             background: #ffffff;
             border-radius: 28px;
@@ -341,10 +344,11 @@
                     <label class="radio-option"><input type="radio" name="emergencia" value="DESMARCAR CASILLA (Dejar en blanco)" checked> No</label>
                 </div>
             </div>
-
             <div style="display: flex; gap: 15px; flex-wrap: wrap; justify-content: space-between; align-items: center; margin-bottom: 20px;">
-                <button type="button" id="generarBtn" class="btn-primary">GENERAR ORDEN</button>
-                <button type="button" id="copyBtn" class="btn-secondary">COPIAR ORDEN</button>
+                <div style="display: flex; gap: 15px; flex-wrap: wrap;">
+                    <button type="button" id="generarBtn" class="btn-primary">GENERAR ORDEN</button>
+                    <button type="button" id="copiarBtn" class="btn-copiar" style="display:none;">COPIAR ORDEN</button>
+                </div>
                 <button type="button" id="resetBtn" class="btn-secondary">RESTABLECER</button>
             </div>
         </form>
@@ -354,6 +358,7 @@
         </div>
     </div>
     <footer>
+        <span>WEB DMD MAE - Generador de Órdenes Subtransmisión EEQ</span>
     </footer>
 </div>
 
@@ -476,18 +481,31 @@
     function actualizarDocSeguridad() {
         const condicion = document.querySelector('input[name="condicion"]:checked').value;
         const container = document.getElementById("docSeguridadOptions");
+        
         if (condicion === "Trabajo Desenergizado") {
             container.innerHTML = `
                 <div class="radio-group">
-                    <label class="radio-option"><input type="radio" name="docSeguridad" value="Trabajos con puesta a tierra" checked> Trabajos con puesta a tierra</label>
-                    <label class="radio-option"><input type="radio" name="docSeguridad" value="Trabajos sin puesta a tierra"> Trabajos sin puesta a tierra</label>
+                    <label class="radio-option">
+                        <input type="radio" name="docSeguridad" value="Trabajos con puesta a tierra" checked> 
+                        Trabajos con puesta a tierra
+                    </label>
+                    <label class="radio-option">
+                        <input type="radio" name="docSeguridad" value="Trabajos sin puesta a tierra"> 
+                        Trabajos sin puesta a tierra
+                    </label>
                 </div>
             `;
         } else {
             container.innerHTML = `
                 <div class="radio-group">
-                    <label class="radio-option"><input type="radio" name="docSeguridad" value="Permiso Trabajo Red Aérea" checked> Permiso Trabajo Red Aérea</label>
-                    <label class="radio-option"><input type="radio" name="docSeguridad" value="Permiso Trabajo Red Subterránea"> Permiso Trabajo Red Subterránea</label>
+                    <label class="radio-option">
+                        <input type="radio" name="docSeguridad" value="Permiso Trabajo Red Aérea" checked> 
+                        Permiso Trabajo Red Aérea
+                    </label>
+                    <label class="radio-option">
+                        <input type="radio" name="docSeguridad" value="Permiso Trabajo Red Subterránea"> 
+                        Permiso Trabajo Red Subterránea
+                    </label>
                 </div>
             `;
         }
@@ -496,20 +514,39 @@
     function actualizarActividades() {
         const tipo = document.querySelector('input[name="tipoInstalacion"]:checked').value;
         const container = document.getElementById("actividadesContainer");
+        
         if (tipo === "SED") {
             container.innerHTML = `
                 <div class="radio-group">
-                    <label class="radio-option"><input type="radio" name="actividad" value="DESB" checked> Desbroce (DESB)</label>
-                    <label class="radio-option"><input type="radio" name="actividad" value="MPTG"> Predictivo (MPTG)</label>
-                    <label class="radio-option"><input type="radio" name="actividad" value="MSED"> Mantenimiento Equipamiento SED (MSED)</label>
+                    <label class="radio-option">
+                        <input type="radio" name="actividad" value="DESB" checked> 
+                        Desbroce (DESB)
+                    </label>
+                    <label class="radio-option">
+                        <input type="radio" name="actividad" value="MPTG"> 
+                        Predictivo (MPTG)
+                    </label>
+                    <label class="radio-option">
+                        <input type="radio" name="actividad" value="MSED"> 
+                        Mantenimiento Equipamiento SED (MSED)
+                    </label>
                 </div>
             `;
         } else {
             container.innerHTML = `
                 <div class="radio-group">
-                    <label class="radio-option"><input type="radio" name="actividad" value="DESB" checked> Desbroce (DESB)</label>
-                    <label class="radio-option"><input type="radio" name="actividad" value="TMGF"> Predictivo (TMGF)</label>
-                    <label class="radio-option"><input type="radio" name="actividad" value="MLST"> Mantenimiento Estructuras LST (MLST)</label>
+                    <label class="radio-option">
+                        <input type="radio" name="actividad" value="DESB" checked> 
+                        Desbroce (DESB)
+                    </label>
+                    <label class="radio-option">
+                        <input type="radio" name="actividad" value="TMGF"> 
+                        Predictivo (TMGF)
+                    </label>
+                    <label class="radio-option">
+                        <input type="radio" name="actividad" value="MLST"> 
+                        Mantenimiento Estructuras LST (MLST)
+                    </label>
                 </div>
             `;
         }
@@ -525,7 +562,12 @@
             
             divDinamico.innerHTML = `
                 <label style="font-weight:600;">Buscar Subestación:</label>
-                <input type="text" id="subestacionSearch" list="subestacionesList" class="search-select" placeholder="Escriba para buscar...">
+                <input type="text" 
+                       id="subestacionSearch" 
+                       list="subestacionesList" 
+                       class="search-select" 
+                       placeholder="Escriba para buscar subestación..."
+                       autocomplete="off">
                 <datalist id="subestacionesList">
                     ${subestacionesUnicas.map(se => `<option value="${se.nombre}">${se.nombre} (Código: ${se.codigo})</option>`).join('')}
                 </datalist>
@@ -533,29 +575,39 @@
                     No se ha seleccionado ninguna subestación
                 </div>
             `;
-            
+
             const searchInput = document.getElementById("subestacionSearch");
             if (searchInput) {
-                searchInput.addEventListener("change", function() {
+                searchInput.addEventListener("input", function() {
                     const seleccionado = this.value;
                     const existe = subestacionesUnicas.find(se => se.nombre === seleccionado);
+                    const estatusDiv = document.getElementById("subEstatus");
+                    
                     if (existe) {
                         currentCompany = seleccionado;
-                        document.getElementById("subEstatus").innerHTML = `Subestación seleccionada: ${currentCompany}`;
-                        document.getElementById("subEstatus").style.background = "#d4edda";
+                        estatusDiv.innerHTML = `Subestación seleccionada: <strong>${currentCompany}</strong>`;
+                        estatusDiv.style.background = "#d4edda";
+                        estatusDiv.style.borderLeft = "4px solid #28a745";
                     } else if (seleccionado === "") {
                         currentCompany = "";
-                        document.getElementById("subEstatus").innerHTML = `No se ha seleccionado ninguna subestación`;
-                        document.getElementById("subEstatus").style.background = "#e8f0fe";
+                        estatusDiv.innerHTML = `No se ha seleccionado ninguna subestación`;
+                        estatusDiv.style.background = "#e8f0fe";
+                        estatusDiv.style.borderLeft = "4px solid #005c8a";
                     }
                 });
             }
             currentCompany = "";
+            
         } else {
             currentCategoria = "LST";
             divDinamico.innerHTML = `
                 <label style="font-weight:600;">Buscar Línea de Subtransmisión:</label>
-                <input type="text" id="lineaSearch" list="lineasList" class="search-select" placeholder="Escriba para buscar...">
+                <input type="text" 
+                       id="lineaSearch" 
+                       list="lineasList" 
+                       class="search-select" 
+                       placeholder="Escriba para buscar línea..."
+                       autocomplete="off">
                 <datalist id="lineasList">
                     ${lineas_lst.map(linea => `<option value="${linea}">${linea}</option>`).join('')}
                 </datalist>
@@ -563,22 +615,23 @@
                     No se ha seleccionado ninguna línea
                 </div>
             `;
-            
+
             const searchInput = document.getElementById("lineaSearch");
             if (searchInput) {
-                searchInput.addEventListener("change", function() {
+                searchInput.addEventListener("input", function() {
                     const seleccionado = this.value;
+                    const estatusDiv = document.getElementById("lineaEstatus");
+                    
                     if (lineas_lst.includes(seleccionado)) {
                         currentCompany = seleccionado;
-                        document.getElementById("lineaEstatus").innerHTML = `Línea seleccionada: ${currentCompany}`;
-                        document.getElementById("lineaEstatus").style.background = "#d4edda";
+                        estatusDiv.innerHTML = `Línea seleccionada: <strong>${currentCompany}</strong>`;
+                        estatusDiv.style.background = "#d4edda";
+                        estatusDiv.style.borderLeft = "4px solid #28a745";
                     } else if (seleccionado === "") {
                         currentCompany = "";
-                        document.getElementById("lineaEstatus").innerHTML = `No se ha seleccionado ninguna línea`;
-                        document.getElementById("lineaEstatus").style.background = "#e8f0fe";
-                    } else {
-                        alert("Por favor, seleccione una línea de la lista desplegable.");
-                        this.value = "";
+                        estatusDiv.innerHTML = `No se ha seleccionado ninguna línea`;
+                        estatusDiv.style.background = "#e8f0fe";
+                        estatusDiv.style.borderLeft = "4px solid #005c8a";
                     }
                 });
             }
@@ -594,6 +647,7 @@
         
         if (!responsable) {
             alert("Por favor, seleccione un técnico responsable.");
+            document.getElementById("responsableSelect").focus();
             return false;
         }
         if (!currentCompany) {
@@ -602,14 +656,17 @@
         }
         if (!numOT) {
             alert("Por favor, ingrese el número de orden SGM.");
+            document.getElementById("numOT").focus();
             return false;
         }
         if (!rtel) {
             alert("Por favor, ingrese las horas de retraso por telecomunicaciones (RTEL).");
+            document.getElementById("rtel").focus();
             return false;
         }
         if (!descLarga) {
             alert("Por favor, ingrese una descripción operativa detallada.");
+            document.getElementById("descLarga").focus();
             return false;
         }
         return true;
@@ -617,7 +674,7 @@
 
     function generarOrden() {
         if (!validarCampos()) return;
-        
+
         const condicion = document.querySelector('input[name="condicion"]:checked').value;
         const docSeguridadElem = document.querySelector('input[name="docSeguridad"]:checked');
         const docSeguridad = docSeguridadElem ? docSeguridadElem.value : "Trabajos con puesta a tierra";
@@ -631,90 +688,142 @@
         const actividad = actividadElem ? actividadElem.value : "DESB";
         const categoria = currentCategoria;
         const company = currentCompany;
-        
+
         const purpose = `${categoria}_${actividad} OT-${numOT}`;
         const details = `1.RTEL_${rtel} 2.${descLarga}`;
 
         const resultDiv = document.getElementById("resultadoDetalles");
         resultDiv.innerHTML = `
-            <div class="result-line"><span class="result-label">Cond. Trabajo:</span><span class="result-value">${condicion}</span></div>
-            <div class="result-line"><span class="result-label">Doc. Seguridad:</span><span class="result-value">${docSeguridad}</span></div>
-            <div class="result-line"><span class="result-label">Empresa / Topología:</span><span class="result-value">${company}</span></div>
-            <div class="result-line"><span class="result-label">Responsable:</span><span class="result-value">${responsable}</span></div>
-            <div class="result-line"><span class="result-label">Continuo/diario:</span><span class="result-value">${periodicidad}</span></div>
-            <div class="result-line"><span class="result-label">Propósito:</span><span class="result-value">${purpose}</span></div>
-            <div class="result-line"><span class="result-label">Detalles:</span><span class="result-value">${details}</span></div>
-            <div class="result-line"><span class="result-label">Trab. emergencia:</span><span class="result-value">${emergencia}</span></div>
+            <div class="result-line">
+                <span class="result-label">Cond. Trabajo:</span>
+                <span class="result-value">${condicion}</span>
+            </div>
+            <div class="result-line">
+                <span class="result-label">Doc. Seguridad:</span>
+                <span class="result-value">${docSeguridad}</span>
+            </div>
+            <div class="result-line">
+                <span class="result-label">Empresa / Topología:</span>
+                <span class="result-value">${company}</span>
+            </div>
+            <div class="result-line">
+                <span class="result-label">Responsable:</span>
+                <span class="result-value">${responsable}</span>
+            </div>
+            <div class="result-line">
+                <span class="result-label">Continuo/diario:</span>
+                <span class="result-value">${periodicidad}</span>
+            </div>
+            <div class="result-line">
+                <span class="result-label">Propósito:</span>
+                <span class="result-value">${purpose}</span>
+            </div>
+            <div class="result-line">
+                <span class="result-label">Detalles:</span>
+                <span class="result-value">${details}</span>
+            </div>
+            <div class="result-line">
+                <span class="result-label">Trab. emergencia:</span>
+                <span class="result-value">${emergencia}</span>
+            </div>
         `;
+
         document.getElementById("resultadoPanel").style.display = "block";
         document.getElementById("copiarBtn").style.display = "inline-flex";
+
         document.getElementById("resultadoPanel").scrollIntoView({ behavior: "smooth", block: "start" });
     }
 
-    function copiarRrden() {
+    function copiarOrden() {
         const resultadoDetalles = document.getElementById("resultadoDetalles");
         if (!resultadoDetalles || resultadoDetalles.children.length === 0) {
             alert("Primero debe generar una orden.");
             return;
         }
-        let textoCopiar = "=== ORDEN DE TRABAJO WEB DMD MAE - Subtransmisión EEQ ===\n\n";
+
+        let textoCopiar = "═══════════════════════════════════════════\n";
+        textoCopiar += "  ORDEN DE TRABAJO - WEB DMD MAE\n";
+        textoCopiar += "  Subtransmisión EEQ\n";
+        textoCopiar += "═══════════════════════════════════════════\n\n";
+        
         const lineas = resultadoDetalles.querySelectorAll('.result-line');
         lineas.forEach(linea => {
             const label = linea.querySelector('.result-label')?.textContent || '';
             const value = linea.querySelector('.result-value')?.textContent || '';
-            textoCopiar += `${label.replace(':', '')}: ${value}\n`;    
-        )};
+            // Limpiar emojis del label para texto plano
+            const labelLimpio = label.replace(/[^\w\sáéíóúÁÉÍÓÚñÑ:.]/g, '').trim();
+            textoCopiar += `${labelLimpio} ${value}\n`;
+        });
+        
+        textoCopiar += "\n═══════════════════════════════════════════\n";
+        textoCopiar += "  Generado por WEB DMD MAE\n";
+        textoCopiar += "═══════════════════════════════════════════\n";
 
-        textoCopiar += "\n=== FIN DE ORDEN ===";
         navigator.clipboard.writeText(textoCopiar).then(() => {
             const btnCopiar = document.getElementById("copiarBtn");
             const textoOriginal = btnCopiar.innerHTML;
+
             btnCopiar.innerHTML = "¡COPIADO!";
-            btnCopiar.style.background = "#6cbf3e";
+            btnCopiar.style.background = "#28a745";
             btnCopiar.style.color = "white";
+            btnCopiar.style.borderColor = "#28a745";
+            
             setTimeout(() => {
                 btnCopiar.innerHTML = textoOriginal;
                 btnCopiar.style.background = "";
                 btnCopiar.style.color = "";
+                btnCopiar.style.borderColor = "";
             }, 2000);
         }).catch(err => {
-            alert("Error al copiar: " + err);
+            alert("❌ Error al copiar: " + err);
         });
     }
 
     function resetFormulario() {
         document.querySelector('input[name="condicion"][value="Trabajo Desenergizado"]').checked = true;
-        document.getElementById("responsableSelect").value = "";
         document.querySelector('input[name="tipoInstalacion"][value="SED"]').checked = true;
         document.querySelector('input[name="periodicidad"][value="Diario"]').checked = true;
         document.querySelector('input[name="emergencia"][value="DESMARCAR CASILLA (Dejar en blanco)"]').checked = true;
+
+        document.getElementById("responsableSelect").value = "";
         document.getElementById("numOT").value = "";
         document.getElementById("rtel").value = "";
         document.getElementById("descLarga").value = "";
-        
+
         actualizarDocSeguridad();
         renderizarSelectorInstalacion();
         actualizarActividades();
         
         currentCompany = "";
         currentCategoria = "SED";
+
         document.getElementById("resultadoPanel").style.display = "none";
         document.getElementById("copiarBtn").style.display = "none";
+        window.scrollTo({ top: 0, behavior: "smooth" });
     }
 
     document.getElementById("generarBtn").addEventListener("click", generarOrden);
     document.getElementById("resetBtn").addEventListener("click", resetFormulario);
     document.getElementById("copiarBtn").addEventListener("click", copiarOrden);
+
+    document.querySelectorAll('input[name="condicion"]').forEach(radio => {
+        radio.addEventListener("change", actualizarDocSeguridad);
+    });
     
-    document.querySelectorAll('input[name="condicion"]').forEach(r => r.addEventListener("change", actualizarDocSeguridad));
-    document.querySelectorAll('input[name="tipoInstalacion"]').forEach(r => r.addEventListener("change", () => {
-        renderizarSelectorInstalacion();
-        actualizarActividades();
-    }));
+    document.querySelectorAll('input[name="tipoInstalacion"]').forEach(radio => {
+        radio.addEventListener("change", () => {
+            renderizarSelectorInstalacion();
+            actualizarActividades();
+        });
+    });
 
     actualizarDocSeguridad();
     renderizarSelectorInstalacion();
     actualizarActividades();
+    
+    console.log("WEB DMD MAE - Generador de Órdenes inicializado correctamente");
+    console.log("Todas las listas desplegables cargadas");
+    console.log("Función de copiado disponible");
 </script>
 </body>
 </html>

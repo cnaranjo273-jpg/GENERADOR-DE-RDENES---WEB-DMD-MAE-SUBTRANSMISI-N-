@@ -177,6 +177,22 @@
             background: #e2e8f0;
         }
 
+        .btn-copiar {
+            background: #6cbf3e20;
+            border: 1px solid #6cbf3e;
+            color: #2b6e1a;
+            padding: 8px 20px;
+            border-radius: 40px;
+            font-weight: 500;
+            cursor: pointer;
+            transition: 0.2s;
+        }
+
+        .btn-copiar:hover {
+            background: #6cbf3e40;
+            transform: translateY(-1px);
+        }
+            
         .result-box {
             background: #ffffff;
             border-radius: 28px;
@@ -328,6 +344,7 @@
 
             <div style="display: flex; gap: 15px; flex-wrap: wrap; justify-content: space-between; align-items: center; margin-bottom: 20px;">
                 <button type="button" id="generarBtn" class="btn-primary">GENERAR ORDEN</button>
+                <button type="button" id="copyBtn" class="btn-secondary">COPIAR ORDEN</button>
                 <button type="button" id="resetBtn" class="btn-secondary">RESTABLECER</button>
             </div>
         </form>
@@ -630,7 +647,39 @@
             <div class="result-line"><span class="result-label">Trab. emergencia:</span><span class="result-value">${emergencia}</span></div>
         `;
         document.getElementById("resultadoPanel").style.display = "block";
+        document.getElementById("copiarBtn").style.display = "inline-flex";
         document.getElementById("resultadoPanel").scrollIntoView({ behavior: "smooth", block: "start" });
+    }
+
+    function copiarRrden() {
+        const resultadoDetalles = document.getElementById("resultadoDetalles");
+        if (!resultadoDetalles || resultadoDetalles.children.length === 0) {
+            alert("Primero debe generar una orden.");
+            return;
+        }
+        let textoCopiar = "=== ORDEN DE TRABAJO WEB DMD MAE - Subtransmisión EEQ ===\n\n";
+        const lineas = resultadoDetalles.querySelectorAll('.result-line');
+        lineas.forEach(linea => {
+            const label = linea.querySelector('.result-label')?.textContent || '';
+            const value = linea.querySelector('.result-value')?.textContent || '';
+            textoCopiar += `${label.replace(':', '')}: ${value}\n`;    
+        )};
+
+        textoCopiar += "\n=== FIN DE ORDEN ===";
+        navigator.clipboard.writeText(textoCopiar).then(() => {
+            const btnCopiar = document.getElementById("copiarBtn");
+            const textoOriginal = btnCopiar.innerHTML;
+            btnCopiar.innerHTML = "¡COPIADO!";
+            btnCopiar.style.background = "#6cbf3e";
+            btnCopiar.style.color = "white";
+            setTimeout(() => {
+                btnCopiar.innerHTML = textoOriginal;
+                btnCopiar.style.background = "";
+                btnCopiar.style.color = "";
+            }, 2000);
+        }).catch(err => {
+            alert("Error al copiar: " + err);
+        });
     }
 
     function resetFormulario() {
@@ -650,10 +699,12 @@
         currentCompany = "";
         currentCategoria = "SED";
         document.getElementById("resultadoPanel").style.display = "none";
+        document.getElementById("copiarBtn").style.display = "none";
     }
 
     document.getElementById("generarBtn").addEventListener("click", generarOrden);
     document.getElementById("resetBtn").addEventListener("click", resetFormulario);
+    document.getElementById("copiarBtn").addEventListener("click", copiarOrden);
     
     document.querySelectorAll('input[name="condicion"]').forEach(r => r.addEventListener("change", actualizarDocSeguridad));
     document.querySelectorAll('input[name="tipoInstalacion"]').forEach(r => r.addEventListener("change", () => {

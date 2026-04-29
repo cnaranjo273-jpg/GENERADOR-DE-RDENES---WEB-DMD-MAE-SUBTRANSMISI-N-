@@ -177,23 +177,28 @@
             background: #e2e8f0;
         }
 
-        .btn-copiar {
-            background: #6cbf3e20;
-            border: 1px solid #6cbf3e;
-            color: #2b6e1a;
-            padding: 8px 20px;
-            border-radius: 40px;
-            font-weight: 500;
+        .btn-copiar-campo {
+            background: #f0f4f8;
+            border: 1px solid #cbd5e1;
+            color: #475569;
+            padding: 4px 10px;
+            border-radius: 8px;
             cursor: pointer;
-            transition: 0.2s;
-            display: inline-flex;
-            align-items: center;
-            gap: 8px;
+            font-size: 0.85rem;
+            transition: all 0.2s;
+            margin-left: 10px;
+            flex-shrink: 0;
         }
 
-        .btn-copiar:hover {
-            background: #6cbf3e40;
-            transform: translateY(-1px);
+        .btn-copiar-campo:hover {
+            background: #6cbf3e;
+            color: white;
+            border-color: #6cbf3e;
+            transform: scale(1.05);
+        }
+
+        .btn-copiar-campo:active {
+            transform: scale(0.95);
         }
 
         .result-box {
@@ -212,6 +217,7 @@
             flex-wrap: wrap;
             gap: 10px;
             font-size: 1rem;
+            align-items: center;
         }
 
         .result-label {
@@ -249,6 +255,26 @@
         .required {
             color: #dc2626;
             margin-left: 4px;
+        }
+
+        .notificacion-copiado {
+            position: fixed;
+            top: 20px;
+            right: 20px;
+            background: #28a745;
+            color: white;
+            padding: 10px 20px;
+            border-radius: 8px;
+            font-weight: 600;
+            z-index: 9999;
+            animation: fadeOut 1.5s forwards;
+            box-shadow: 0 4px 12px rgba(40, 167, 69, 0.3);
+        }
+
+        @keyframes fadeOut {
+            0% { opacity: 1; transform: translateY(0); }
+            70% { opacity: 1; transform: translateY(0); }
+            100% { opacity: 0; transform: translateY(-20px); }
         }
 
         footer {
@@ -345,10 +371,7 @@
                 </div>
             </div>
             <div style="display: flex; gap: 15px; flex-wrap: wrap; justify-content: space-between; align-items: center; margin-bottom: 20px;">
-                <div style="display: flex; gap: 15px; flex-wrap: wrap;">
-                    <button type="button" id="generarBtn" class="btn-primary">GENERAR ORDEN</button>
-                    <button type="button" id="copiarBtn" class="btn-copiar" style="display:none;">COPIAR ORDEN</button>
-                </div>
+                <button type="button" id="generarBtn" class="btn-primary">GENERAR ORDEN</button>
                 <button type="button" id="resetBtn" class="btn-secondary">RESTABLECER</button>
             </div>
         </form>
@@ -575,7 +598,7 @@
                     No se ha seleccionado ninguna subestación
                 </div>
             `;
-
+            
             const searchInput = document.getElementById("subestacionSearch");
             if (searchInput) {
                 searchInput.addEventListener("input", function() {
@@ -615,7 +638,7 @@
                     No se ha seleccionado ninguna línea
                 </div>
             `;
-
+            
             const searchInput = document.getElementById("lineaSearch");
             if (searchInput) {
                 searchInput.addEventListener("input", function() {
@@ -692,6 +715,11 @@
         const purpose = `${categoria}_${actividad} OT-${numOT}`;
         const details = `1.RTEL_${rtel} 2.${descLarga}`;
 
+        const companyEscaped = company.replace(/'/g, "\\'").replace(/"/g, '&quot;');
+        const responsableEscaped = responsable.replace(/'/g, "\\'").replace(/"/g, '&quot;');
+        const purposeEscaped = purpose.replace(/'/g, "\\'").replace(/"/g, '&quot;');
+        const detailsEscaped = details.replace(/'/g, "\\'").replace(/"/g, '&quot;');
+
         const resultDiv = document.getElementById("resultadoDetalles");
         resultDiv.innerHTML = `
             <div class="result-line">
@@ -705,10 +733,12 @@
             <div class="result-line">
                 <span class="result-label">Empresa / Topología:</span>
                 <span class="result-value">${company}</span>
+                <button type="button" class="btn-copiar-campo" onclick="copiarCampo('${companyEscaped}')" title="Copiar Empresa / Topología">COPIAR</button>
             </div>
             <div class="result-line">
                 <span class="result-label">Responsable:</span>
                 <span class="result-value">${responsable}</span>
+                <button type="button" class="btn-copiar-campo" onclick="copiarCampo('${responsableEscaped}')" title="Copiar Responsable">COPIAR</button>
             </div>
             <div class="result-line">
                 <span class="result-label">Continuo/diario:</span>
@@ -717,10 +747,12 @@
             <div class="result-line">
                 <span class="result-label">Propósito:</span>
                 <span class="result-value">${purpose}</span>
+                <button type="button" class="btn-copiar-campo" onclick="copiarCampo('${purposeEscaped}')" title="Copiar Propósito">COPIAR</button>
             </div>
             <div class="result-line">
                 <span class="result-label">Detalles:</span>
                 <span class="result-value">${details}</span>
+                <button type="button" class="btn-copiar-campo" onclick="copiarCampo('${detailsEscaped}')" title="Copiar Detalles">COPIAR</button>
             </div>
             <div class="result-line">
                 <span class="result-label">Trab. emergencia:</span>
@@ -729,51 +761,21 @@
         `;
 
         document.getElementById("resultadoPanel").style.display = "block";
-        document.getElementById("copiarBtn").style.display = "inline-flex";
 
         document.getElementById("resultadoPanel").scrollIntoView({ behavior: "smooth", block: "start" });
     }
 
-    function copiarOrden() {
-        const resultadoDetalles = document.getElementById("resultadoDetalles");
-        if (!resultadoDetalles || resultadoDetalles.children.length === 0) {
-            alert("Primero debe generar una orden.");
-            return;
-        }
+    function copiarCampo(texto) {
+        navigator.clipboard.writeText(texto).then(() => {
+            const notificacion = document.createElement('div');
+            notificacion.textContent = 'Copiado: ' + texto;
+            notificacion.className = 'notificacion-copiado';
+            document.body.appendChild(notificacion);
 
-        let textoCopiar = "═══════════════════════════════════════════\n";
-        textoCopiar += "  ORDEN DE TRABAJO - WEB DMD MAE\n";
-        textoCopiar += "  Subtransmisión EEQ\n";
-        textoCopiar += "═══════════════════════════════════════════\n\n";
-        
-        const lineas = resultadoDetalles.querySelectorAll('.result-line');
-        lineas.forEach(linea => {
-            const label = linea.querySelector('.result-label')?.textContent || '';
-            const value = linea.querySelector('.result-value')?.textContent || '';
-            // Limpiar emojis del label para texto plano
-            const labelLimpio = label.replace(/[^\w\sáéíóúÁÉÍÓÚñÑ:.]/g, '').trim();
-            textoCopiar += `${labelLimpio} ${value}\n`;
-        });
-        
-        textoCopiar += "\n═══════════════════════════════════════════\n";
-        textoCopiar += "  Generado por WEB DMD MAE\n";
-        textoCopiar += "═══════════════════════════════════════════\n";
-
-        navigator.clipboard.writeText(textoCopiar).then(() => {
-            const btnCopiar = document.getElementById("copiarBtn");
-            const textoOriginal = btnCopiar.innerHTML;
-
-            btnCopiar.innerHTML = "¡COPIADO!";
-            btnCopiar.style.background = "#28a745";
-            btnCopiar.style.color = "white";
-            btnCopiar.style.borderColor = "#28a745";
-            
             setTimeout(() => {
-                btnCopiar.innerHTML = textoOriginal;
-                btnCopiar.style.background = "";
-                btnCopiar.style.color = "";
-                btnCopiar.style.borderColor = "";
-            }, 2000);
+                notificacion.remove();
+            }, 1500);
+            
         }).catch(err => {
             alert("❌ Error al copiar: " + err);
         });
@@ -793,23 +795,22 @@
         actualizarDocSeguridad();
         renderizarSelectorInstalacion();
         actualizarActividades();
-        
+
         currentCompany = "";
         currentCategoria = "SED";
 
         document.getElementById("resultadoPanel").style.display = "none";
-        document.getElementById("copiarBtn").style.display = "none";
+
         window.scrollTo({ top: 0, behavior: "smooth" });
     }
 
     document.getElementById("generarBtn").addEventListener("click", generarOrden);
     document.getElementById("resetBtn").addEventListener("click", resetFormulario);
-    document.getElementById("copiarBtn").addEventListener("click", copiarOrden);
 
     document.querySelectorAll('input[name="condicion"]').forEach(radio => {
         radio.addEventListener("change", actualizarDocSeguridad);
     });
-    
+
     document.querySelectorAll('input[name="tipoInstalacion"]').forEach(radio => {
         radio.addEventListener("change", () => {
             renderizarSelectorInstalacion();
@@ -821,9 +822,8 @@
     renderizarSelectorInstalacion();
     actualizarActividades();
     
-    console.log("WEB DMD MAE - Generador de Órdenes inicializado correctamente");
-    console.log("Todas las listas desplegables cargadas");
-    console.log("Función de copiado disponible");
+    console.log("WEB DMD MAE - Generador de Órdenes inicializado");
+    console.log("Botones de copiado individuales disponibles");
 </script>
 </body>
 </html>

@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=yes">
-    <title>WEB DMD MAE - Generador de Órdenes </title>
+    <title>WEB DMD MAE - Generador de Órdenes (Subtransmisión EEQ)</title>
     <style>
         * {
             margin: 0;
@@ -177,6 +177,28 @@
             background: #e2e8f0;
         }
 
+        /* Estilo añadido para el botón de migración */
+        .btn-success {
+            background: #28a745;
+            color: white;
+            border: none;
+            padding: 12px 28px;
+            border-radius: 40px;
+            font-weight: 700;
+            font-size: 1rem;
+            cursor: pointer;
+            transition: 0.2s;
+            display: inline-flex;
+            align-items: center;
+            gap: 10px;
+        }
+
+        .btn-success:hover {
+            background: #218838;
+            transform: translateY(-1px);
+            box-shadow: 0 8px 18px rgba(40,167,69,0.3);
+        }
+
         .btn-copiar-campo {
             background: #f0f4f8;
             border: 1px solid #cbd5e1;
@@ -230,6 +252,22 @@
             color: #1e2f3e;
             word-break: break-word;
             flex: 1;
+        }
+
+        /* Estilo para el contenedor de migración */
+        .migration-container {
+            margin-top: 20px;
+            padding-top: 20px;
+            border-top: 1px solid #cbd5e1;
+            display: flex;
+            gap: 15px;
+            align-items: center;
+            flex-wrap: wrap;
+        }
+
+        .migration-field {
+            flex: 1;
+            min-width: 250px;
         }
 
         .badge-eeq {
@@ -298,6 +336,7 @@
     <div class="eeq-header">
         <h1>
             GENERADOR DE ÓRDENES - WEB DMD MAE 
+            <small>Subtransmisión EEQ</small>
         </h1>
         <div class="eeq-sub">
             <span>Generación según normativa DMD</span>
@@ -307,18 +346,7 @@
     <div class="eeq-body">
         <form id="ordenForm">
             <div class="section-card">
-                <div class="section-title">1. Condición de red <span class="required">*</span></div>
-                <div class="radio-group">
-                    <label class="radio-option"><input type="radio" name="condicion" value="Trabajo Desenergizado" checked> Trabajo Desenergizado</label>
-                    <label class="radio-option"><input type="radio" name="condicion" value="Trabajo Energizado"> Trabajo Energizado</label>
-                </div>
-            </div>
-            <div class="section-card" id="docSeguridadCard">
-                <div class="section-title">2. Documento de Seguridad <span class="required">*</span></div>
-                <div id="docSeguridadOptions"></div>
-            </div>
-            <div class="section-card">
-                <div class="section-title">3. Técnico Responsable <span class="required">*</span></div>
+                <div class="section-title">1. Técnico Responsable <span class="required">*</span></div>
                 <select id="responsableSelect" style="max-width: 400px;">
                     <option value="">-- Seleccione un responsable --</option>
                     <option value="0979171760 POLO CARRILLO">0979171760 POLO CARRILLO</option>
@@ -329,7 +357,7 @@
                 </select>
             </div>
             <div class="section-card">
-                <div class="section-title">4. Tipo de instalación <span class="required">*</span></div>
+                <div class="section-title">2. Tipo de instalación <span class="required">*</span></div>
                 <div class="radio-group">
                     <label class="radio-option"><input type="radio" name="tipoInstalacion" value="SED" checked> Subestación Distribución (SED)</label>
                     <label class="radio-option"><input type="radio" name="tipoInstalacion" value="LST"> Línea de subtransmisión (LST)</label>
@@ -337,19 +365,43 @@
                 <div id="instalacionDinamica" style="margin-top: 20px;"></div>
             </div>
             <div class="section-card">
-                <div class="section-title">5. Actividad normada <span class="required">*</span></div>
+                <div class="section-title">3. Actividad normada <span class="required">*</span></div>
                 <div id="actividadesContainer"></div>
             </div>
             <div class="section-card">
-                <div class="section-title">6. Propósito (OT SGM) <span class="required">*</span></div>
+                <div class="section-title">4. Propósito (OT SGM) <span class="required">*</span></div>
                 <input type="text" id="numOT" placeholder="Ej: 20546" style="max-width: 280px;">
             </div>
             <div class="section-card">
-                <div class="section-title">7. Continuo / Diario <span class="required">*</span></div>
+                <div class="section-title">5. Continuo / Diario <span class="required">*</span></div>
                 <div class="radio-group">
                     <label class="radio-option"><input type="radio" name="periodicidad" value="Diario" checked> Diario (mismo día)</label>
                     <label class="radio-option"><input type="radio" name="periodicidad" value="Continuo"> Continuo (varios días)</label>
                 </div>
+            </div>
+            <div class="section-card">
+                <div class="section-title">6. Tipo de trabajo <span class="required">*</span></div>
+                <select id="trabajoSelect" style="max-width: 400px;">
+                    <option value="">-- Seleccione tipo de trabajo --</option>
+                    <option value="Predictivo">Predictivo</option>
+                    <option value="Preventivo">Preventivo</option>
+                    <option value="Correctivo">Correctivo</option>
+                    <option value="Mejoras o nuevas instalaciones">Mejoras o nuevas instalaciones</option>
+                </select>
+            </div>
+            <div class="section-card">
+                <div class="section-title">7. Fechas y Horas de Trabajo <span class="required">*</span></div>
+                <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 20px; max-width: 600px;">
+                    <div>
+                        <label style="display: block; font-weight:600; margin-bottom: 5px;">Fecha Hora de inicio:</label>
+                        <input type="datetime-local" id="fechaHoraInicio" style="max-width: 300px;">
+                    </div>
+                    <div>
+                        <label style="display: block; font-weight:600; margin-bottom: 5px;">Fecha Hora de finalización:</label>
+                        <input type="datetime-local" id="fechaHoraFin" style="max-width: 300px;">
+                    </div>
+                </div>
+                <div id="tiempoDuracion" style="margin-top: 10px; font-weight: 500; color: #003057;"></div>
             </div>
             <div class="section-card">
                 <div class="section-title">8. Detalles <span class="required">*</span></div>
@@ -357,16 +409,20 @@
                     <label>Horas retraso telecom (RTEL):</label>
                     <input type="text" id="rtel" placeholder="0,0" style="max-width: 150px;">
                 </div>
-                <div>
+                <div style="margin-bottom: 12px;">
                     <label>Descripción operativa detallada:</label>
                     <textarea id="descLarga" rows="2" placeholder="Ej: Inspección termográfica y limpieza de aisladores" style="width:100%; max-width: 600px;"></textarea>
+                </div>
+                <div>
+                    <label>Notas:</label>
+                    <textarea id="notas" rows="2" placeholder="Ej: Trabajo a cargo de lineas" style="width:100%; max-width: 600px;"></textarea>
                 </div>
             </div>
             <div class="section-card">
                 <div class="section-title">9. Trabajo de emergencia</div>
                 <div class="radio-group">
-                    <label class="radio-option"><input type="radio" name="emergencia" value="MARCAR CASILLA con un visto (Sí)"> Sí (menos de 72h)</label>
-                    <label class="radio-option"><input type="radio" name="emergencia" value="DESMARCAR CASILLA (Dejar en blanco)" checked> No</label>
+                    <label class="radio-option"><input type="radio" name="emergencia" value="Sí (Menos de 72 horas)"> Sí (menos de 72h)</label>
+                    <label class="radio-option"><input type="radio" name="emergencia" value="No" checked> No</label>
                 </div>
             </div>
             <div style="display: flex; gap: 15px; flex-wrap: wrap; justify-content: space-between; align-items: center; margin-bottom: 20px;">
@@ -377,6 +433,15 @@
         <div id="resultadoPanel" class="result-box" style="display: none;">
             <div class="section-title" style="border-left-color: #6cbf3e; margin-bottom: 0.5rem;">ORDEN VALIDADA</div>
             <div id="resultadoDetalles"></div>
+
+            <div class="migration-container">
+                <div class="migration-field">
+                    <label style="display: block; font-weight:600; margin-bottom: 5px;">ORDEN TRABAJO:</label>
+                    <input type="text" id="ordenTrabajoInput" placeholder="Ingrese número de orden de trabajo" style="max-width: 300px;">
+                </div>
+                <button type="button" id="migrarBtn" class="btn-success" style="align-self: flex-end;">MIGRAR A GOOGLE SHEETS</button>
+            </div>
+            <div id="migracionStatus" style="margin-top: 10px; font-size: 0.9rem;"></div>
         </div>
     </div>
     <footer>
@@ -386,74 +451,40 @@
 
 <script>
     const subestaciones_list = [
-        { codigo: "1", nombre: "14_01_OLIMPICO" },
-        { codigo: "01", nombre: "14_01_OLIMPICO" },
-        { codigo: "2", nombre: "14_02_LULUNCOTO" },
-        { codigo: "02", nombre: "14_02_LULUNCOTO" },
-        { codigo: "3", nombre: "14_03_BARRIO NUEVO" },
-        { codigo: "03", nombre: "14_03_BARRIO NUEVO" },
-        { codigo: "4", nombre: "14_04_CHIMBACALLE" },
-        { codigo: "04", nombre: "14_04_CHIMBACALLE" },
-        { codigo: "5", nombre: "14_05_CHILIBULO" },
-        { codigo: "05", nombre: "14_05_CHILIBULO" },
-        { codigo: "6", nombre: "14_06_ESCUELA SUCRE" },
-        { codigo: "06", nombre: "14_06_ESCUELA SUCRE" },
-        { codigo: "7", nombre: "14_07_SAN ROQUE" },
-        { codigo: "07", nombre: "14_07_SAN ROQUE" },
-        { codigo: "8", nombre: "14_08_LA MARIN" },
-        { codigo: "08", nombre: "14_08_LA MARIN" },
-        { codigo: "9", nombre: "14_09_MIRAFLORES" },
-        { codigo: "09", nombre: "14_09_MIRAFLORES" },
-        { codigo: "10", nombre: "14_10_DIEZ VIEJA" },
-        { codigo: "11", nombre: "14_11_BELISARIO QUEVEDO" },
-        { codigo: "12", nombre: "14_12_LA FLORESTA" },
-        { codigo: "13", nombre: "14_13_GRANDA CENTENO" },
-        { codigo: "14", nombre: "14_14_GUALO" },
-        { codigo: "15", nombre: "14_15_EL BOSQUE" },
-        { codigo: "16", nombre: "14_16_RIO COCA" },
-        { codigo: "17", nombre: "14_17_ANDALUCIA" },
-        { codigo: "18", nombre: "14_18_CRISTIANIA" },
-        { codigo: "19", nombre: "14_19_COTOCOLLAO" },
-        { codigo: "20", nombre: "14_20_SUR" },
-        { codigo: "21", nombre: "14_21_EPICLACHIMA" },
-        { codigo: "22", nombre: "14_22_SAN ANTONIO" },
-        { codigo: "23", nombre: "14_23_CONOCOTO" },
-        { codigo: "24", nombre: "14_24_LA CAROLINA" },
-        { codigo: "25", nombre: "14_25_SAN PABLO" },
-        { codigo: "26", nombre: "14_26_ALANGASI" },
-        { codigo: "27", nombre: "14_27_SAN RAFAEL" },
-        { codigo: "28", nombre: "14_28_INAQUITO" },
-        { codigo: "29", nombre: "14_29_CUMBAYA" },
-        { codigo: "30", nombre: "14_30_PLATAFORMA FINANCIERA" },
-        { codigo: "31", nombre: "14_31_TABABELA" },
-        { codigo: "32", nombre: "14_32_DIEZ NUEVA" },
-        { codigo: "33", nombre: "14_33_AEROPUERTO" },
-        { codigo: "36", nombre: "14_36_TUMBACO" },
-        { codigo: "37", nombre: "14_37_SANTA ROSA" },
-        { codigo: "38", nombre: "14_38_NORTE" },
-        { codigo: "39", nombre: "14_39_VICENTINA" },
-        { codigo: "41", nombre: "14_41_SELVA ALEGRE" },
-        { codigo: "42", nombre: "14_42_MOVIL PAPALLACTA" },
-        { codigo: "46", nombre: "14_46_INGA BAJO" },
-        { codigo: "48", nombre: "14_48_MIRADOR ALTO" },
-        { codigo: "49", nombre: "14_49_LOS BANCOS" },
-        { codigo: "51", nombre: "14_51_PARQUE BICENTENARIO" },
-        { codigo: "53", nombre: "14_53_PEREZ GUERRERO" },
-        { codigo: "55", nombre: "14_55_SANGOLQUI" },
-        { codigo: "57", nombre: "14_57_POMASQUI" },
-        { codigo: "58", nombre: "14_58_QUINCHE" },
-        { codigo: "59", nombre: "14_59_EUGENIO ESPEJO" },
-        { codigo: "63", nombre: "14_63_BATAN ALTO" },
-        { codigo: "70", nombre: "14_70_MOVIL" },
-        { codigo: "73", nombre: "14_73_EL OBRAJE" },
-        { codigo: "80", nombre: "14_80_CUMBAYA" },
-        { codigo: "81", nombre: "14_81_ESTACION TERRENA" },
-        { codigo: "82", nombre: "14_82_GUANGOPOLO TERMICA" },
-        { codigo: "84", nombre: "14_84_GUANGOPOLO HIDRAULICA" },
-        { codigo: "86", nombre: "14_NAYON" },
-        { codigo: "88", nombre: "14_88_PASOCHOA" },
-        { codigo: "ADE", nombre: "14_ADELCA 138KV" },
-        { codigo: "CAR", nombre: "14_EL CARMEN" }
+        { codigo: "1", nombre: "14_01_OLIMPICO" }, { codigo: "01", nombre: "14_01_OLIMPICO" },
+        { codigo: "2", nombre: "14_02_LULUNCOTO" }, { codigo: "02", nombre: "14_02_LULUNCOTO" },
+        { codigo: "3", nombre: "14_03_BARRIO NUEVO" }, { codigo: "03", nombre: "14_03_BARRIO NUEVO" },
+        { codigo: "4", nombre: "14_04_CHIMBACALLE" }, { codigo: "04", nombre: "14_04_CHIMBACALLE" },
+        { codigo: "5", nombre: "14_05_CHILIBULO" }, { codigo: "05", nombre: "14_05_CHILIBULO" },
+        { codigo: "6", nombre: "14_06_ESCUELA SUCRE" }, { codigo: "06", nombre: "14_06_ESCUELA SUCRE" },
+        { codigo: "7", nombre: "14_07_SAN ROQUE" }, { codigo: "07", nombre: "14_07_SAN ROQUE" },
+        { codigo: "8", nombre: "14_08_LA MARIN" }, { codigo: "08", nombre: "14_08_LA MARIN" },
+        { codigo: "9", nombre: "14_09_MIRAFLORES" }, { codigo: "09", nombre: "14_09_MIRAFLORES" },
+        { codigo: "10", nombre: "14_10_DIEZ VIEJA" }, { codigo: "11", nombre: "14_11_BELISARIO QUEVEDO" },
+        { codigo: "12", nombre: "14_12_LA FLORESTA" }, { codigo: "13", nombre: "14_13_GRANDA CENTENO" },
+        { codigo: "14", nombre: "14_14_GUALO" }, { codigo: "15", nombre: "14_15_EL BOSQUE" },
+        { codigo: "16", nombre: "14_16_RIO COCA" }, { codigo: "17", nombre: "14_17_ANDALUCIA" },
+        { codigo: "18", nombre: "14_18_CRISTIANIA" }, { codigo: "19", nombre: "14_19_COTOCOLLAO" },
+        { codigo: "20", nombre: "14_20_SUR" }, { codigo: "21", nombre: "14_21_EPICLACHIMA" },
+        { codigo: "22", nombre: "14_22_SAN ANTONIO" }, { codigo: "23", nombre: "14_23_CONOCOTO" },
+        { codigo: "24", nombre: "14_24_LA CAROLINA" }, { codigo: "25", nombre: "14_25_SAN PABLO" },
+        { codigo: "26", nombre: "14_26_ALANGASI" }, { codigo: "27", nombre: "14_27_SAN RAFAEL" },
+        { codigo: "28", nombre: "14_28_INAQUITO" }, { codigo: "29", nombre: "14_29_CUMBAYA" },
+        { codigo: "30", nombre: "14_30_PLATAFORMA FINANCIERA" }, { codigo: "31", nombre: "14_31_TABABELA" },
+        { codigo: "32", nombre: "14_32_DIEZ NUEVA" }, { codigo: "33", nombre: "14_33_AEROPUERTO" },
+        { codigo: "36", nombre: "14_36_TUMBACO" }, { codigo: "37", nombre: "14_37_SANTA ROSA" },
+        { codigo: "38", nombre: "14_38_NORTE" }, { codigo: "39", nombre: "14_39_VICENTINA" },
+        { codigo: "41", nombre: "14_41_SELVA ALEGRE" }, { codigo: "42", nombre: "14_42_MOVIL PAPALLACTA" },
+        { codigo: "46", nombre: "14_46_INGA BAJO" }, { codigo: "48", nombre: "14_48_MIRADOR ALTO" },
+        { codigo: "49", nombre: "14_49_LOS BANCOS" }, { codigo: "51", nombre: "14_51_PARQUE BICENTENARIO" },
+        { codigo: "53", nombre: "14_53_PEREZ GUERRERO" }, { codigo: "55", nombre: "14_55_SANGOLQUI" },
+        { codigo: "57", nombre: "14_57_POMASQUI" }, { codigo: "58", nombre: "14_58_QUINCHE" },
+        { codigo: "59", nombre: "14_59_EUGENIO ESPEJO" }, { codigo: "63", nombre: "14_63_BATAN ALTO" },
+        { codigo: "70", nombre: "14_70_MOVIL" }, { codigo: "73", nombre: "14_73_EL OBRAJE" },
+        { codigo: "80", nombre: "14_80_CUMBAYA" }, { codigo: "81", nombre: "14_81_ESTACION TERRENA" },
+        { codigo: "82", nombre: "14_82_GUANGOPOLO TERMICA" }, { codigo: "84", nombre: "14_84_GUANGOPOLO HIDRAULICA" },
+        { codigo: "86", nombre: "14_NAYON" }, { codigo: "88", nombre: "14_88_PASOCHOA" },
+        { codigo: "ADE", nombre: "14_ADELCA 138KV" }, { codigo: "CAR", nombre: "14_EL CARMEN" }
     ];
 
     const lineas_lst = [
@@ -499,39 +530,7 @@
 
     let currentCompany = "";
     let currentCategoria = "SED";
-
-    function actualizarDocSeguridad() {
-        const condicion = document.querySelector('input[name="condicion"]:checked').value;
-        const container = document.getElementById("docSeguridadOptions");
-        
-        if (condicion === "Trabajo Desenergizado") {
-            container.innerHTML = `
-                <div class="radio-group">
-                    <label class="radio-option">
-                        <input type="radio" name="docSeguridad" value="Trabajos con puesta a tierra" checked> 
-                        Trabajos con puesta a tierra
-                    </label>
-                    <label class="radio-option">
-                        <input type="radio" name="docSeguridad" value="Trabajos sin puesta a tierra"> 
-                        Trabajos sin puesta a tierra
-                    </label>
-                </div>
-            `;
-        } else {
-            container.innerHTML = `
-                <div class="radio-group">
-                    <label class="radio-option">
-                        <input type="radio" name="docSeguridad" value="Permiso Trabajo Red Aérea" checked> 
-                        Permiso Trabajo Red Aérea
-                    </label>
-                    <label class="radio-option">
-                        <input type="radio" name="docSeguridad" value="Permiso Trabajo Red Subterránea"> 
-                        Permiso Trabajo Red Subterránea
-                    </label>
-                </div>
-            `;
-        }
-    }
+    let datosGenerados = null;
 
     function actualizarActividades() {
         const tipo = document.querySelector('input[name="tipoInstalacion"]:checked').value;
@@ -541,16 +540,13 @@
             container.innerHTML = `
                 <div class="radio-group">
                     <label class="radio-option">
-                        <input type="radio" name="actividad" value="DESB" checked> 
-                        Desbroce (DESB)
+                        <input type="radio" name="actividad" value="DESB" checked> Desbroce (DESB)
                     </label>
                     <label class="radio-option">
-                        <input type="radio" name="actividad" value="MPTG"> 
-                        Predictivo (MPTG)
+                        <input type="radio" name="actividad" value="MPTG"> Predictivo (MPTG)
                     </label>
                     <label class="radio-option">
-                        <input type="radio" name="actividad" value="MSED"> 
-                        Mantenimiento Equipamiento SED (MSED)
+                        <input type="radio" name="actividad" value="MSED"> Mantenimiento Equipamiento SED (MSED)
                     </label>
                 </div>
             `;
@@ -558,16 +554,13 @@
             container.innerHTML = `
                 <div class="radio-group">
                     <label class="radio-option">
-                        <input type="radio" name="actividad" value="DESB" checked> 
-                        Desbroce (DESB)
+                        <input type="radio" name="actividad" value="DESB" checked> Desbroce (DESB)
                     </label>
                     <label class="radio-option">
-                        <input type="radio" name="actividad" value="TMGF"> 
-                        Predictivo (TMGF)
+                        <input type="radio" name="actividad" value="TMGF"> Predictivo (TMGF)
                     </label>
                     <label class="radio-option">
-                        <input type="radio" name="actividad" value="MLST"> 
-                        Mantenimiento Estructuras LST (MLST)
+                        <input type="radio" name="actividad" value="MLST"> Mantenimiento Estructuras LST (MLST)
                     </label>
                 </div>
             `;
@@ -584,12 +577,7 @@
             
             divDinamico.innerHTML = `
                 <label style="font-weight:600;">Buscar Subestación:</label>
-                <input type="text" 
-                       id="subestacionSearch" 
-                       list="subestacionesList" 
-                       class="search-select" 
-                       placeholder="Escriba para buscar subestación..."
-                       autocomplete="off">
+                <input type="text" id="subestacionSearch" list="subestacionesList" class="search-select" placeholder="Escriba para buscar subestación..." autocomplete="off">
                 <datalist id="subestacionesList">
                     ${subestacionesUnicas.map(se => `<option value="${se.nombre}">${se.nombre} (Código: ${se.codigo})</option>`).join('')}
                 </datalist>
@@ -597,39 +585,23 @@
                     No se ha seleccionado ninguna subestación
                 </div>
             `;
-            
-            const searchInput = document.getElementById("subestacionSearch");
-            if (searchInput) {
-                searchInput.addEventListener("input", function() {
-                    const seleccionado = this.value;
-                    const existe = subestacionesUnicas.find(se => se.nombre === seleccionado);
-                    const estatusDiv = document.getElementById("subEstatus");
-                    
-                    if (existe) {
-                        currentCompany = seleccionado;
-                        estatusDiv.innerHTML = `Subestación seleccionada: <strong>${currentCompany}</strong>`;
-                        estatusDiv.style.background = "#d4edda";
-                        estatusDiv.style.borderLeft = "4px solid #28a745";
-                    } else if (seleccionado === "") {
-                        currentCompany = "";
-                        estatusDiv.innerHTML = `No se ha seleccionado ninguna subestación`;
-                        estatusDiv.style.background = "#e8f0fe";
-                        estatusDiv.style.borderLeft = "4px solid #005c8a";
-                    }
-                });
-            }
-            currentCompany = "";
-            
+            document.getElementById("subestacionSearch").addEventListener("input", function() {
+                const seleccionado = this.value;
+                const existe = subestacionesUnicas.find(se => se.nombre === seleccionado);
+                const estatusDiv = document.getElementById("subEstatus");
+                if (existe) {
+                    currentCompany = seleccionado;
+                    estatusDiv.innerHTML = `Subestación seleccionada: <strong>${currentCompany}</strong>`;
+                } else if (seleccionado === "") {
+                    currentCompany = "";
+                    estatusDiv.innerHTML = `No se ha seleccionado ninguna subestación`;
+                }
+            });
         } else {
             currentCategoria = "LST";
             divDinamico.innerHTML = `
                 <label style="font-weight:600;">Buscar Línea de Subtransmisión:</label>
-                <input type="text" 
-                       id="lineaSearch" 
-                       list="lineasList" 
-                       class="search-select" 
-                       placeholder="Escriba para buscar línea..."
-                       autocomplete="off">
+                <input type="text" id="lineaSearch" list="lineasList" class="search-select" placeholder="Escriba para buscar línea..." autocomplete="off">
                 <datalist id="lineasList">
                     ${lineas_lst.map(linea => `<option value="${linea}">${linea}</option>`).join('')}
                 </datalist>
@@ -637,28 +609,38 @@
                     No se ha seleccionado ninguna línea
                 </div>
             `;
-            
-            const searchInput = document.getElementById("lineaSearch");
-            if (searchInput) {
-                searchInput.addEventListener("input", function() {
-                    const seleccionado = this.value;
-                    const estatusDiv = document.getElementById("lineaEstatus");
-                    
-                    if (lineas_lst.includes(seleccionado)) {
-                        currentCompany = seleccionado;
-                        estatusDiv.innerHTML = `Línea seleccionada: <strong>${currentCompany}</strong>`;
-                        estatusDiv.style.background = "#d4edda";
-                        estatusDiv.style.borderLeft = "4px solid #28a745";
-                    } else if (seleccionado === "") {
-                        currentCompany = "";
-                        estatusDiv.innerHTML = `No se ha seleccionado ninguna línea`;
-                        estatusDiv.style.background = "#e8f0fe";
-                        estatusDiv.style.borderLeft = "4px solid #005c8a";
-                    }
-                });
-            }
-            currentCompany = "";
+            document.getElementById("lineaSearch").addEventListener("input", function() {
+                const seleccionado = this.value;
+                const estatusDiv = document.getElementById("lineaEstatus");
+                if (lineas_lst.includes(seleccionado)) {
+                    currentCompany = seleccionado;
+                    estatusDiv.innerHTML = `Línea seleccionada: <strong>${currentCompany}</strong>`;
+                } else if (seleccionado === "") {
+                    currentCompany = "";
+                    estatusDiv.innerHTML = `No se ha seleccionado ninguna línea`;
+                }
+            });
         }
+        currentCompany = "";
+    }
+
+    function calcularDuracion() {
+        const inicio = document.getElementById("fechaHoraInicio").value;
+        const fin = document.getElementById("fechaHoraFin").value;
+        const tiempoDiv = document.getElementById("tiempoDuracion");
+        
+        if (inicio && fin) {
+            const diffMs = new Date(fin) - new Date(inicio);
+            if (diffMs < 0) {
+                tiempoDiv.innerHTML = '<span style="color: red;">La fecha de finalización debe ser posterior a la de inicio.</span>';
+                return null;
+            }
+            const diffHoras = (diffMs / (1000 * 60 * 60)).toFixed(2);
+            tiempoDiv.innerHTML = ` Duración estimada: <strong>${diffHoras} horas</strong>`;
+            return diffHoras;
+        }
+        tiempoDiv.innerHTML = '';
+        return null;
     }
 
     function validarCampos() {
@@ -666,29 +648,41 @@
         const rtel = document.getElementById("rtel").value.trim();
         const descLarga = document.getElementById("descLarga").value.trim();
         const responsable = document.getElementById("responsableSelect").value;
+        const trabajoSelect = document.getElementById("trabajoSelect").value;
+        const fechaInicio = document.getElementById("fechaHoraInicio").value;
+        const fechaFin = document.getElementById("fechaHoraFin").value;
         
         if (!responsable) {
             alert("Por favor, seleccione un técnico responsable.");
-            document.getElementById("responsableSelect").focus();
             return false;
         }
         if (!currentCompany) {
             alert("Por favor, seleccione una subestación o línea de transmisión.");
             return false;
         }
+        if (!trabajoSelect) {
+            alert("Por favor, seleccione el tipo de trabajo.");
+            document.getElementById("trabajoSelect").focus();
+            return false;
+        }
         if (!numOT) {
             alert("Por favor, ingrese el número de orden SGM.");
-            document.getElementById("numOT").focus();
             return false;
         }
         if (!rtel) {
             alert("Por favor, ingrese las horas de retraso por telecomunicaciones (RTEL).");
-            document.getElementById("rtel").focus();
             return false;
         }
         if (!descLarga) {
             alert("Por favor, ingrese una descripción operativa detallada.");
-            document.getElementById("descLarga").focus();
+            return false;
+        }
+        if (!fechaInicio || !fechaFin) {
+            alert("Por favor, seleccione la fecha y hora de inicio y finalización.");
+            return false;
+        }
+        if (new Date(fechaFin) <= new Date(fechaInicio)) {
+            alert("La fecha de finalización debe ser posterior a la de inicio.");
             return false;
         }
         return true;
@@ -697,71 +691,129 @@
     function generarOrden() {
         if (!validarCampos()) return;
 
-        const condicion = document.querySelector('input[name="condicion"]:checked').value;
-        const docSeguridadElem = document.querySelector('input[name="docSeguridad"]:checked');
-        const docSeguridad = docSeguridadElem ? docSeguridadElem.value : "Trabajos con puesta a tierra";
         const responsable = document.getElementById("responsableSelect").value;
         const periodicidad = document.querySelector('input[name="periodicidad"]:checked').value;
         const emergencia = document.querySelector('input[name="emergencia"]:checked').value;
         const numOT = document.getElementById("numOT").value.trim();
         const rtel = document.getElementById("rtel").value.trim();
         const descLarga = document.getElementById("descLarga").value.trim();
+        const notas = document.getElementById("notas").value.trim() || "Sin notas adicionales";
         const actividadElem = document.querySelector('input[name="actividad"]:checked');
         const actividad = actividadElem ? actividadElem.value : "DESB";
-        const categoria = currentCategoria;
-        const company = currentCompany;
+        const trabajoSelect = document.getElementById("trabajoSelect").value;
+        const fechaInicio = document.getElementById("fechaHoraInicio").value;
+        const fechaFin = document.getElementById("fechaHoraFin").value;
+        const diffHoras = calcularDuracion();
 
-        const purpose = `${categoria}_${actividad} OT-${numOT}`;
+        const purpose = `${currentCategoria}_${actividad} OT-${numOT}`;
         const details = `1.RTEL_${rtel} 2.${descLarga}`;
 
-        const companyEscaped = company.replace(/'/g, "\\'").replace(/"/g, '&quot;');
-        const responsableEscaped = responsable.replace(/'/g, "\\'").replace(/"/g, '&quot;');
-        const purposeEscaped = purpose.replace(/'/g, "\\'").replace(/"/g, '&quot;');
-        const detailsEscaped = details.replace(/'/g, "\\'").replace(/"/g, '&quot;');
+        datosGenerados = {
+            responsable,
+            company: currentCompany,
+            periodicidad,
+            trabajoTipo: trabajoSelect,
+            emergencia,
+            numOT,
+            purpose,
+            details,
+            notas,
+            actividad,
+            fechaInicio,
+            fechaFin,
+            diffHoras: diffHoras || 0,
+            ordenTrabajo: ""
+        };
 
         const resultDiv = document.getElementById("resultadoDetalles");
         resultDiv.innerHTML = `
-            <div class="result-line">
-                <span class="result-label">Cond. Trabajo:</span>
-                <span class="result-value">${condicion}</span>
-            </div>
-            <div class="result-line">
-                <span class="result-label">Doc. Seguridad:</span>
-                <span class="result-value">${docSeguridad}</span>
-            </div>
-            <div class="result-line">
-                <span class="result-label">Empresa / Topología:</span>
-                <span class="result-value">${company}</span>
-                <button type="button" class="btn-copiar-campo" onclick="copiarCampo('${companyEscaped}')" title="Copiar Empresa / Topología">COPIAR</button>
-            </div>
-            <div class="result-line">
-                <span class="result-label">Responsable:</span>
-                <span class="result-value">${responsable}</span>
-                <button type="button" class="btn-copiar-campo" onclick="copiarCampo('${responsableEscaped}')" title="Copiar Responsable">COPIAR</button>
-            </div>
-            <div class="result-line">
-                <span class="result-label">Continuo/diario:</span>
-                <span class="result-value">${periodicidad}</span>
-            </div>
-            <div class="result-line">
-                <span class="result-label">Propósito:</span>
-                <span class="result-value">${purpose}</span>
-                <button type="button" class="btn-copiar-campo" onclick="copiarCampo('${purposeEscaped}')" title="Copiar Propósito">COPIAR</button>
-            </div>
-            <div class="result-line">
-                <span class="result-label">Detalles:</span>
-                <span class="result-value">${details}</span>
-                <button type="button" class="btn-copiar-campo" onclick="copiarCampo('${detailsEscaped}')" title="Copiar Detalles">COPIAR</button>
-            </div>
-            <div class="result-line">
-                <span class="result-label">Trab. emergencia:</span>
-                <span class="result-value">${emergencia}</span>
-            </div>
+            <div class="result-line"><span class="result-label">Responsable:</span><span class="result-value">${responsable}</span><button class="btn-copiar-campo" onclick="copiarCampo('${responsable.replace(/'/g, "\\'")}')">COPIAR</button></div>
+            <div class="result-line"><span class="result-label">Empresa/Alimentador:</span><span class="result-value">${currentCompany}</span><button class="btn-copiar-campo" onclick="copiarCampo('${currentCompany.replace(/'/g, "\\'")}')">COPIAR</button></div>
+            <div class="result-line"><span class="result-label">Continuo/Diario:</span><span class="result-value">${periodicidad}</span></div>
+            <div class="result-line"><span class="result-label">Tipo Trabajo:</span><span class="result-value">${trabajoSelect}</span></div>
+            <div class="result-line"><span class="result-label">Propósito:</span><span class="result-value">${purpose}</span><button class="btn-copiar-campo" onclick="copiarCampo('${purpose.replace(/'/g, "\\'")}')">COPIAR</button></div>
+            <div class="result-line"><span class="result-label">Fecha Inicio:</span><span class="result-value">${fechaInicio.replace('T', ' ')}</span></div>
+            <div class="result-line"><span class="result-label">Fecha Fin:</span><span class="result-value">${fechaFin.replace('T', ' ')}</span></div>
+            <div class="result-line"><span class="result-label">Duración (Horas):</span><span class="result-value">${diffHoras || 'N/A'}</span></div>
+            <div class="result-line"><span class="result-label">Detalles:</span><span class="result-value">${details}</span><button class="btn-copiar-campo" onclick="copiarCampo('${details.replace(/'/g, "\\'")}')">COPIAR</button></div>
+            <div class="result-line"><span class="result-label">Notas:</span><span class="result-value">${notas}</span></div>
+            <div class="result-line"><span class="result-label">Emergencia:</span><span class="result-value">${emergencia}</span></div>
         `;
 
         document.getElementById("resultadoPanel").style.display = "block";
-
+        document.getElementById("ordenTrabajoInput").value = "";
+        document.getElementById("migracionStatus").innerHTML = "";
         document.getElementById("resultadoPanel").scrollIntoView({ behavior: "smooth", block: "start" });
+    }
+
+    async function migrarASheets() {
+        if (!datosGenerados) {
+            alert("Primero debe generar una orden antes de migrar.");
+            return;
+        }
+
+        const ordenTrabajo = document.getElementById("ordenTrabajoInput").value.trim();
+        if (!ordenTrabajo) {
+            alert("Por favor, ingrese el número de ORDEN TRABAJO antes de migrar.");
+            return;
+        }
+
+        datosGenerados.ordenTrabajo = ordenTrabajo;
+        const fechaRegistro = new Date().toISOString().replace('T', ' ').substring(0, 16);
+        const GOOGLE_SHEETS_URL = "https://script.google.com/macros/s/AKfycbwRj0VItJFyQ-jQeguKEgbjtQScs0v9G323D3jMAjhnJ5zVdFcjGQMu-7vD4IjAYgxA/exec";
+        
+        const payload = {
+
+            estado: "Pendiente",
+            ordenTrabajo: datosGenerados.ordenTrabajo,
+            empresaAlimentador: datosGenerados.company,
+            continuoDiario: datosGenerados.periodicidad,
+            tipoTrabajo: datosGenerados.trabajoTipo,
+            ingresadoPor: datosGenerados.responsable,
+            dispositivo: datosGenerados.actividad,
+            idPlanManiobras: `OT SGM ${datosGenerados.numOT}`,
+            trabajoEmergente: datosGenerados.emergencia,
+            fechaHoraInicio: datosGenerados.fechaInicio.replace('T', ' '),
+            fechaHoraFinalizacion: datosGenerados.fechaFin.replace('T', ' '),
+            tiempoOrdenTrabajo: datosGenerados.diffHoras + " horas",
+            fechaHoraRegistro: fechaRegistro,
+            proposito: datosGenerados.purpose,
+            detalles: datosGenerados.details,
+            notas: datosGenerados.notas,
+            razonDenegado: "",
+            horasRTEL: document.getElementById("rtel").value.trim(),
+            validacionEmpresa: "",
+            validacionProposito: "",
+            validacionDetalle: "",
+            resultadoHomologacion: "",
+            observaciones: "",
+            recomendadoHomologacion: ""
+        };
+
+        document.getElementById("migracionStatus").innerHTML = "Migrando datos... ";
+        
+        try {
+            const response = await fetch(GOOGLE_SHEETS_URL, {
+                method: 'POST',
+                mode: 'no-cors',
+                cache: 'no-cache',
+                headers: {
+                    'Content-Type': 'application/json',
+                },
+                redirect: 'follow',
+                body: JSON.stringify(payload)
+            });
+
+            document.getElementById("migracionStatus").innerHTML = " Datos migrados correctamente (si usas no-cors, verifica manualmente en Sheets).";
+            document.getElementById("migracionStatus").style.color = "green";
+            
+            console.log("Payload enviado:", payload);
+            
+        } catch (error) {
+            console.error("Error al migrar:", error);
+            document.getElementById("migracionStatus").innerHTML = " Error al conectar con Google Sheets. Verifica la URL y tu script.";
+            document.getElementById("migracionStatus").style.color = "red";
+        }
     }
 
     function copiarCampo(texto) {
@@ -770,45 +822,42 @@
             notificacion.textContent = 'Copiado: ' + texto;
             notificacion.className = 'notificacion-copiado';
             document.body.appendChild(notificacion);
-
-            setTimeout(() => {
-                notificacion.remove();
-            }, 1500);
-            
-        }).catch(err => {
-            alert("❌ Error al copiar: " + err);
-        });
+            setTimeout(() => notificacion.remove(), 1500);
+        }).catch(err => alert(" Error al copiar: " + err));
     }
 
     function resetFormulario() {
-        document.querySelector('input[name="condicion"][value="Trabajo Desenergizado"]').checked = true;
         document.querySelector('input[name="tipoInstalacion"][value="SED"]').checked = true;
         document.querySelector('input[name="periodicidad"][value="Diario"]').checked = true;
-        document.querySelector('input[name="emergencia"][value="DESMARCAR CASILLA (Dejar en blanco)"]').checked = true;
+        document.querySelector('input[name="emergencia"][value="No"]').checked = true;
 
         document.getElementById("responsableSelect").value = "";
         document.getElementById("numOT").value = "";
         document.getElementById("rtel").value = "";
         document.getElementById("descLarga").value = "";
+        document.getElementById("notas").value = "";
+        document.getElementById("trabajoSelect").value = "";
+        document.getElementById("fechaHoraInicio").value = "";
+        document.getElementById("fechaHoraFin").value = "";
+        document.getElementById("tiempoDuracion").innerHTML = "";
 
-        actualizarDocSeguridad();
         renderizarSelectorInstalacion();
         actualizarActividades();
 
         currentCompany = "";
         currentCategoria = "SED";
+        datosGenerados = null;
 
         document.getElementById("resultadoPanel").style.display = "none";
-
         window.scrollTo({ top: 0, behavior: "smooth" });
     }
 
     document.getElementById("generarBtn").addEventListener("click", generarOrden);
     document.getElementById("resetBtn").addEventListener("click", resetFormulario);
-
-    document.querySelectorAll('input[name="condicion"]').forEach(radio => {
-        radio.addEventListener("change", actualizarDocSeguridad);
-    });
+    document.getElementById("migrarBtn").addEventListener("click", migrarASheets);
+    
+    document.getElementById("fechaHoraInicio").addEventListener("change", calcularDuracion);
+    document.getElementById("fechaHoraFin").addEventListener("change", calcularDuracion);
 
     document.querySelectorAll('input[name="tipoInstalacion"]').forEach(radio => {
         radio.addEventListener("change", () => {
@@ -817,12 +866,11 @@
         });
     });
 
-    actualizarDocSeguridad();
     renderizarSelectorInstalacion();
     actualizarActividades();
     
-    console.log("WEB DMD MAE - Generador de Órdenes inicializado");
-    console.log("Botones de copiado individuales disponibles");
+    console.log("WEB DMD MAE v2.0 - Inicializado con éxito");
+    console.log("Recuerda configurar la URL de Google Sheets para la migración.");
 </script>
 </body>
 </html>

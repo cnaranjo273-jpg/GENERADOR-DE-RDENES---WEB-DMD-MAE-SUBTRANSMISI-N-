@@ -5,11 +5,7 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=yes">
     <title>WEB DMD MAE - Generador de Órdenes (Subtransmisión EEQ)</title>
     <style>
-        * {
-            margin: 0;
-            padding: 0;
-            box-sizing: border-box;
-        }
+        * { margin: 0; padding: 0; box-sizing: border-box; }
 
         body {
             background: linear-gradient(145deg, #eef2f7 0%, #d9e0e8 100%);
@@ -62,9 +58,7 @@
             flex-wrap: wrap;
         }
 
-        .eeq-body {
-            padding: 2rem;
-        }
+        .eeq-body { padding: 2rem; }
 
         .section-card {
             background: #f9fbfd;
@@ -105,14 +99,9 @@
             font-weight: 500;
         }
 
-        .radio-option:hover {
-            background: #eef3fc;
-            border-color: #005c8a;
-        }
+        .radio-option:hover { background: #eef3fc; border-color: #005c8a; }
 
-        input[type="radio"], input[type="text"], textarea, select {
-            accent-color: #6cbf3e;
-        }
+        input[type="radio"], input[type="text"], textarea, select { accent-color: #6cbf3e; }
 
         input, textarea, select {
             border: 1px solid #cbd5e1;
@@ -124,11 +113,7 @@
             transition: 0.2s;
         }
 
-        select {
-            cursor: pointer;
-            background-color: white;
-            max-width: 400px;
-        }
+        select { cursor: pointer; background-color: white; max-width: 400px; }
 
         input:focus, textarea:focus, select:focus {
             outline: none;
@@ -136,10 +121,7 @@
             box-shadow: 0 0 0 3px rgba(0,92,138,0.2);
         }
 
-        .search-select {
-            width: 100%;
-            max-width: 500px;
-        }
+        .search-select { width: 100%; max-width: 500px; }
 
         .btn-primary {
             background: #003057;
@@ -173,11 +155,8 @@
             transition: 0.2s;
         }
 
-        .btn-secondary:hover {
-            background: #e2e8f0;
-        }
+        .btn-secondary:hover { background: #e2e8f0; }
 
-        /* Estilo añadido para el botón de migración */
         .btn-success {
             background: #28a745;
             color: white;
@@ -212,16 +191,8 @@
             flex-shrink: 0;
         }
 
-        .btn-copiar-campo:hover {
-            background: #6cbf3e;
-            color: white;
-            border-color: #6cbf3e;
-            transform: scale(1.05);
-        }
-
-        .btn-copiar-campo:active {
-            transform: scale(0.95);
-        }
+        .btn-copiar-campo:hover { background: #6cbf3e; color: white; border-color: #6cbf3e; }
+        .btn-copiar-campo:active { transform: scale(0.95); }
 
         .result-box {
             background: #ffffff;
@@ -242,19 +213,9 @@
             align-items: center;
         }
 
-        .result-label {
-            font-weight: 700;
-            min-width: 160px;
-            color: #003057;
-        }
+        .result-label { font-weight: 700; min-width: 160px; color: #003057; }
+        .result-value { color: #1e2f3e; word-break: break-word; flex: 1; }
 
-        .result-value {
-            color: #1e2f3e;
-            word-break: break-word;
-            flex: 1;
-        }
-
-        /* Estilo para el contenedor de migración */
         .migration-container {
             margin-top: 20px;
             padding-top: 20px;
@@ -265,10 +226,7 @@
             flex-wrap: wrap;
         }
 
-        .migration-field {
-            flex: 1;
-            min-width: 250px;
-        }
+        .migration-field { flex: 1; min-width: 250px; }
 
         .badge-eeq {
             background: #6cbf3e20;
@@ -290,10 +248,7 @@
             color: #003057;
         }
 
-        .required {
-            color: #dc2626;
-            margin-left: 4px;
-        }
+        .required { color: #dc2626; margin-left: 4px; }
 
         .notificacion-copiado {
             position: fixed;
@@ -433,7 +388,6 @@
         <div id="resultadoPanel" class="result-box" style="display: none;">
             <div class="section-title" style="border-left-color: #6cbf3e; margin-bottom: 0.5rem;">ORDEN VALIDADA</div>
             <div id="resultadoDetalles"></div>
-
             <div class="migration-container">
                 <div class="migration-field">
                     <label style="display: block; font-weight:600; margin-bottom: 5px;">ORDEN TRABAJO:</label>
@@ -519,13 +473,7 @@
         "14_ST_CUMBAYA- NAYON", "14_ST_GUANGOPOLO TERMICA - SAN RAFAEL",
         "14_ST_GUANGOPOLO TERMICA - VICENTINA", "14_ST_GUANGOPOLO HIDRAULICA - ESTACION TERRENA",
         "14_ST_GUANGOPOLO HIDRAULICA - GUANGOPOLO TERMICA", "14_ST_PASOCHOA - SANGOLQUI",
-        "14_ST_NAYON - AEROPUERTO", "14_ST_00_EL INGA - ALANGASI",
-        "14_ST_00_EL INGA - INGA BAJO", "14_ST_00_EL INGA - QUINCHE",
-        "14_ST_00_EL INGA - RECUPERADORA", "14_ST_00_POMASQUI - COTOCOLLAO",
-        "14_ST_00_POMASQUI - GUALO", "14_ST_00_POMASQUI - PARQUE BICENTENARIO",
-        "14_ST_00_POMASQUI - POMASQUI", "14_ST_00_POMASQUI - SAN ANTONIO",
-        "14_ST_00_SANTA ROSA - CHILIBULO", "14_ST_00_SANTA ROSA - EL CARMEN",
-        "14_ST_00_SANTA ROSA - MIRADOR ALTO", "14_ST_00_SANTA ROSA - SANTA ROSA 2"
+        "14_ST_NAYON - AEROPUERTO"
     ];
 
     let currentCompany = "";
@@ -539,29 +487,17 @@
         if (tipo === "SED") {
             container.innerHTML = `
                 <div class="radio-group">
-                    <label class="radio-option">
-                        <input type="radio" name="actividad" value="DESB" checked> Desbroce (DESB)
-                    </label>
-                    <label class="radio-option">
-                        <input type="radio" name="actividad" value="MPTG"> Predictivo (MPTG)
-                    </label>
-                    <label class="radio-option">
-                        <input type="radio" name="actividad" value="MSED"> Mantenimiento Equipamiento SED (MSED)
-                    </label>
+                    <label class="radio-option"><input type="radio" name="actividad" value="DESB" checked> Desbroce (DESB)</label>
+                    <label class="radio-option"><input type="radio" name="actividad" value="MPTG"> Predictivo (MPTG)</label>
+                    <label class="radio-option"><input type="radio" name="actividad" value="MSED"> Mantenimiento Equipamiento SED (MSED)</label>
                 </div>
             `;
         } else {
             container.innerHTML = `
                 <div class="radio-group">
-                    <label class="radio-option">
-                        <input type="radio" name="actividad" value="DESB" checked> Desbroce (DESB)
-                    </label>
-                    <label class="radio-option">
-                        <input type="radio" name="actividad" value="TMGF"> Predictivo (TMGF)
-                    </label>
-                    <label class="radio-option">
-                        <input type="radio" name="actividad" value="MLST"> Mantenimiento Estructuras LST (MLST)
-                    </label>
+                    <label class="radio-option"><input type="radio" name="actividad" value="DESB" checked> Desbroce (DESB)</label>
+                    <label class="radio-option"><input type="radio" name="actividad" value="TMGF"> Predictivo (TMGF)</label>
+                    <label class="radio-option"><input type="radio" name="actividad" value="MLST"> Mantenimiento Estructuras LST (MLST)</label>
                 </div>
             `;
         }
@@ -581,10 +517,9 @@
                 <datalist id="subestacionesList">
                     ${subestacionesUnicas.map(se => `<option value="${se.nombre}">${se.nombre} (Código: ${se.codigo})</option>`).join('')}
                 </datalist>
-                <div id="subEstatus" class="selected-info" style="margin-top: 10px;">
-                    No se ha seleccionado ninguna subestación
-                </div>
+                <div id="subEstatus" class="selected-info" style="margin-top: 10px;">No se ha seleccionado ninguna subestación</div>
             `;
+            
             document.getElementById("subestacionSearch").addEventListener("input", function() {
                 const seleccionado = this.value;
                 const existe = subestacionesUnicas.find(se => se.nombre === seleccionado);
@@ -592,9 +527,11 @@
                 if (existe) {
                     currentCompany = seleccionado;
                     estatusDiv.innerHTML = `Subestación seleccionada: <strong>${currentCompany}</strong>`;
+                    estatusDiv.style.background = "#d4edda";
                 } else if (seleccionado === "") {
                     currentCompany = "";
                     estatusDiv.innerHTML = `No se ha seleccionado ninguna subestación`;
+                    estatusDiv.style.background = "#e8f0fe";
                 }
             });
         } else {
@@ -605,19 +542,20 @@
                 <datalist id="lineasList">
                     ${lineas_lst.map(linea => `<option value="${linea}">${linea}</option>`).join('')}
                 </datalist>
-                <div id="lineaEstatus" class="selected-info" style="margin-top: 10px;">
-                    No se ha seleccionado ninguna línea
-                </div>
+                <div id="lineaEstatus" class="selected-info" style="margin-top: 10px;">No se ha seleccionado ninguna línea</div>
             `;
+            
             document.getElementById("lineaSearch").addEventListener("input", function() {
                 const seleccionado = this.value;
                 const estatusDiv = document.getElementById("lineaEstatus");
                 if (lineas_lst.includes(seleccionado)) {
                     currentCompany = seleccionado;
                     estatusDiv.innerHTML = `Línea seleccionada: <strong>${currentCompany}</strong>`;
+                    estatusDiv.style.background = "#d4edda";
                 } else if (seleccionado === "") {
                     currentCompany = "";
                     estatusDiv.innerHTML = `No se ha seleccionado ninguna línea`;
+                    estatusDiv.style.background = "#e8f0fe";
                 }
             });
         }
@@ -652,39 +590,14 @@
         const fechaInicio = document.getElementById("fechaHoraInicio").value;
         const fechaFin = document.getElementById("fechaHoraFin").value;
         
-        if (!responsable) {
-            alert("Por favor, seleccione un técnico responsable.");
-            return false;
-        }
-        if (!currentCompany) {
-            alert("Por favor, seleccione una subestación o línea de transmisión.");
-            return false;
-        }
-        if (!trabajoSelect) {
-            alert("Por favor, seleccione el tipo de trabajo.");
-            document.getElementById("trabajoSelect").focus();
-            return false;
-        }
-        if (!numOT) {
-            alert("Por favor, ingrese el número de orden SGM.");
-            return false;
-        }
-        if (!rtel) {
-            alert("Por favor, ingrese las horas de retraso por telecomunicaciones (RTEL).");
-            return false;
-        }
-        if (!descLarga) {
-            alert("Por favor, ingrese una descripción operativa detallada.");
-            return false;
-        }
-        if (!fechaInicio || !fechaFin) {
-            alert("Por favor, seleccione la fecha y hora de inicio y finalización.");
-            return false;
-        }
-        if (new Date(fechaFin) <= new Date(fechaInicio)) {
-            alert("La fecha de finalización debe ser posterior a la de inicio.");
-            return false;
-        }
+        if (!responsable) { alert("Por favor, seleccione un técnico responsable."); return false; }
+        if (!currentCompany) { alert("Por favor, seleccione una subestación o línea de transmisión."); return false; }
+        if (!trabajoSelect) { alert("Por favor, seleccione el tipo de trabajo."); return false; }
+        if (!numOT) { alert("Por favor, ingrese el número de orden SGM."); return false; }
+        if (!rtel) { alert("Por favor, ingrese las horas de retraso por telecomunicaciones (RTEL)."); return false; }
+        if (!descLarga) { alert("Por favor, ingrese una descripción operativa detallada."); return false; }
+        if (!fechaInicio || !fechaFin) { alert("Por favor, seleccione la fecha y hora de inicio y finalización."); return false; }
+        if (new Date(fechaFin) <= new Date(fechaInicio)) { alert("La fecha de finalización debe ser posterior a la de inicio."); return false; }
         return true;
     }
 
@@ -709,19 +622,10 @@
         const details = `1.RTEL_${rtel} 2.${descLarga}`;
 
         datosGenerados = {
-            responsable,
-            company: currentCompany,
-            periodicidad,
-            trabajoTipo: trabajoSelect,
-            emergencia,
-            numOT,
-            purpose,
-            details,
-            notas,
-            actividad,
-            fechaInicio,
-            fechaFin,
-            diffHoras: diffHoras || 0,
+            responsable, company: currentCompany,
+            periodicidad, trabajoTipo: trabajoSelect, emergencia,
+            numOT, purpose, details, notas, actividad,
+            fechaInicio, fechaFin, diffHoras: diffHoras || 0,
             ordenTrabajo: ""
         };
 
@@ -759,11 +663,11 @@
         }
 
         datosGenerados.ordenTrabajo = ordenTrabajo;
-        const fechaRegistro = new Date().toISOString().replace('T', ' ').substring(0, 16);
-        const GOOGLE_SHEETS_URL = "https://script.google.com/macros/s/AKfycbwRj0VItJFyQ-jQeguKEgbjtQScs0v9G323D3jMAjhnJ5zVdFcjGQMu-7vD4IjAYgxA/exec";
+        const fechaRegistro = new Date().toLocaleString('es-EC', { timeZone: 'America/Guayaquil' });
+        
+        const GOOGLE_SHEETS_URL = "https://script.google.com/macros/library/d/1i5OYqE--w2sq1KEf7b2gY9sMowjv7fJzxzvt8_yUy3II-5q5p65JJlbb/1";
         
         const payload = {
-
             estado: "Pendiente",
             ordenTrabajo: datosGenerados.ordenTrabajo,
             empresaAlimentador: datosGenerados.company,
@@ -790,28 +694,35 @@
             recomendadoHomologacion: ""
         };
 
-        document.getElementById("migracionStatus").innerHTML = "Migrando datos... ";
+        document.getElementById("migracionStatus").innerHTML = " Migrando datos a Google Sheets...";
         
         try {
             const response = await fetch(GOOGLE_SHEETS_URL, {
                 method: 'POST',
-                mode: 'no-cors',
-                cache: 'no-cache',
-                headers: {
-                    'Content-Type': 'application/json',
-                },
-                redirect: 'follow',
+                headers: { 'Content-Type': 'application/json' },
                 body: JSON.stringify(payload)
             });
-
-            document.getElementById("migracionStatus").innerHTML = " Datos migrados correctamente (si usas no-cors, verifica manualmente en Sheets).";
-            document.getElementById("migracionStatus").style.color = "green";
             
-            console.log("Payload enviado:", payload);
+            const textoRespuesta = await response.text();
+            console.log("Respuesta del servidor:", textoRespuesta);
+            
+            let resultado;
+            try {
+                resultado = JSON.parse(textoRespuesta);
+            } catch(e) {
+                resultado = { result: "desconocido", message: textoRespuesta };
+            }
+            
+            if (resultado.result === 'success') {
+                document.getElementById("migracionStatus").innerHTML = " ¡Datos migrados exitosamente a Google Sheets!";
+                document.getElementById("migracionStatus").style.color = "green";
+            } else {
+                throw new Error(resultado.message || "Error desconocido");
+            }
             
         } catch (error) {
-            console.error("Error al migrar:", error);
-            document.getElementById("migracionStatus").innerHTML = " Error al conectar con Google Sheets. Verifica la URL y tu script.";
+            console.error("Error detallado:", error);
+            document.getElementById("migracionStatus").innerHTML = ` Error al migrar: ${error.message}`;
             document.getElementById("migracionStatus").style.color = "red";
         }
     }
@@ -869,8 +780,7 @@
     renderizarSelectorInstalacion();
     actualizarActividades();
     
-    console.log("WEB DMD MAE v2.0 - Inicializado con éxito");
-    console.log("Recuerda configurar la URL de Google Sheets para la migración.");
+    console.log("WEB DMD MAE v2.1 - Sistema listo para migrar datos");
 </script>
 </body>
 </html>

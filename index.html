@@ -563,7 +563,7 @@
                 return null;
             }
             const diffHoras = (diffMs / (1000 * 60 * 60)).toFixed(2);
-            tiempoDiv.innerHTML = `⏱️ Duración estimada: <strong>${diffHoras} horas</strong>`;
+            tiempoDiv.innerHTML = ` Duración estimada: <strong>${diffHoras} horas</strong>`;
             return diffHoras;
         }
         tiempoDiv.innerHTML = '';
@@ -606,14 +606,14 @@
         const fechaInicio = document.getElementById("fechaHoraInicio").value;
         const fechaFin = document.getElementById("fechaHoraFin").value;
         const diffHoras = calcularDuracion();
-
+        const horas = document.getElementById("Horas retraso telecom (RTEL)").value;
         const purpose = `${currentCategoria}_${actividad} OT-${numOT}`;
         const details = `1.RTEL_${rtel} 2.${descLarga}`;
 
         datosGenerados = {
             responsable, company: currentCompany,
             periodicidad, trabajoTipo: trabajoSelect, emergencia,
-            numOT, purpose, details, notas, actividad,
+            numOT, purpose, details,horas, notas, actividad,
             fechaInicio, fechaFin, diffHoras: diffHoras || 0,
             ordenTrabajo: ""
         };
@@ -629,6 +629,7 @@
             <div class="result-line"><span class="result-label">Fecha Fin:</span><span class="result-value">${fechaFin.replace('T', ' ')}</span></div>
             <div class="result-line"><span class="result-label">Duración (Horas):</span><span class="result-value">${diffHoras || 'N/A'}</span></div>
             <div class="result-line"><span class="result-label">Detalles:</span><span class="result-value">${details}</span><button class="btn-copiar-campo" onclick="copiarCampo('${details.replace(/'/g, "\\'")}')">COPIAR</button></div>
+            <div class="result-line"><span class="result-label">Horas RTL:</span><span class="result-value">${horas}</span></div>
             <div class="result-line"><span class="result-label">Notas:</span><span class="result-value">${notas}</span></div>
             <div class="result-line"><span class="result-label">Emergencia:</span><span class="result-value">${emergencia}</span></div>
         `;
@@ -654,7 +655,6 @@
         datosGenerados.ordenTrabajo = ordenTrabajo;
         const fechaRegistro = new Date().toLocaleString('es-EC', { timeZone: 'America/Guayaquil' });
 
-        // ⚠️⚠️⚠️ CAMBIA ESTA URL POR LA DE TU NUEVO APPS SCRIPT ⚠️⚠️⚠️
         const GOOGLE_SHEETS_URL = "https://script.google.com/macros/s/AKfycbxuVkNXaA_M0lSHqbL_QNLDt8nA_VG03wh2Jgk40c4CJUEOM8KpY0AqLvELuC5bDLXx/exec";
         
         const payload = {
@@ -674,6 +674,7 @@
             fechaHoraRegistro: fechaRegistro,
             proposito: datosGenerados.purpose,
             detalles: datosGenerados.details,
+            horas: datosGenerados.horasRTL,
             notas: datosGenerados.notas,
             razonDenegado: "",
             horasRTEL: document.getElementById("rtel").value.trim(),
@@ -723,7 +724,6 @@
         document.querySelector('input[name="tipoInstalacion"][value="SED"]').checked = true;
         document.querySelector('input[name="periodicidad"][value="Diario"]').checked = true;
         document.querySelector('input[name="emergencia"][value="No"]').checked = true;
-
         document.getElementById("responsableSelect").value = "";
         document.getElementById("numOT").value = "";
         document.getElementById("rtel").value = "";

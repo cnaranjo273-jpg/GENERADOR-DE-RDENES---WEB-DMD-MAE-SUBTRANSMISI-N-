@@ -228,17 +228,6 @@
 
         .migration-field { flex: 1; min-width: 250px; }
 
-        .badge-eeq {
-            background: #6cbf3e20;
-            color: #2b6e1a;
-            padding: 4px 12px;
-            border-radius: 50px;
-            font-size: 0.75rem;
-            font-weight: 600;
-            display: inline-block;
-            margin-top: 8px;
-        }
-
         .selected-info {
             background: #e8f0fe;
             padding: 10px 15px;
@@ -574,7 +563,7 @@
                 return null;
             }
             const diffHoras = (diffMs / (1000 * 60 * 60)).toFixed(2);
-            tiempoDiv.innerHTML = ` Duración estimada: <strong>${diffHoras} horas</strong>`;
+            tiempoDiv.innerHTML = `⏱️ Duración estimada: <strong>${diffHoras} horas</strong>`;
             return diffHoras;
         }
         tiempoDiv.innerHTML = '';
@@ -650,84 +639,84 @@
         document.getElementById("resultadoPanel").scrollIntoView({ behavior: "smooth", block: "start" });
     }
 
+    async function migrarASheets() {
+        if (!datosGenerados) {
+            alert("Primero debe generar una orden antes de migrar.");
+            return;
+        }
 
-async function migrarASheets() {
-    if (!datosGenerados) {
-        alert("Primero debe generar una orden antes de migrar.");
-        return;
-    }
+        const ordenTrabajo = document.getElementById("ordenTrabajoInput").value.trim();
+        if (!ordenTrabajo) {
+            alert("Por favor, ingrese el número de ORDEN TRABAJO antes de migrar.");
+            return;
+        }
 
-    const ordenTrabajo = document.getElementById("ordenTrabajoInput").value.trim();
-    if (!ordenTrabajo) {
-        alert("Por favor, ingrese el número de ORDEN TRABAJO antes de migrar.");
-        return;
-    }
+        datosGenerados.ordenTrabajo = ordenTrabajo;
+        const fechaRegistro = new Date().toLocaleString('es-EC', { timeZone: 'America/Guayaquil' });
 
-    datosGenerados.ordenTrabajo = ordenTrabajo;
-    const fechaRegistro = new Date().toLocaleString('es-EC', { timeZone: 'America/Guayaquil' });
-
-    const GOOGLE_SHEETS_URL = "https://script.google.com/macros/s/AKfycbyYFsg_eO5toU13IKviyNkZnl47B1RSqa_GITc3BWh_0K8Qrz5a2eTHoCvmZYHn5WDv/exec";
-    
-    const payload = {
-        estado: "Pendiente",
-        ordenTrabajo: datosGenerados.ordenTrabajo,
-        empresaAlimentador: datosGenerados.company,
-        continuoDiario: datosGenerados.periodicidad,
-        tipoTrabajo: datosGenerados.trabajoTipo,
-        ingresadoPor: datosGenerados.responsable,
-        dispositivo: datosGenerados.actividad,
-        idPlanManiobras: `OT SGM ${datosGenerados.numOT}`,
-        trabajoEmergente: datosGenerados.emergencia,
-        fechaHoraInicio: datosGenerados.fechaInicio.replace('T', ' '),
-        fechaHoraFinalizacion: datosGenerados.fechaFin.replace('T', ' '),
-        tiempoOrdenTrabajo: datosGenerados.diffHoras + " horas",
-        fechaHoraRegistro: fechaRegistro,
-        proposito: datosGenerados.purpose,
-        detalles: datosGenerados.details,
-        notas: datosGenerados.notas,
-        razonDenegado: "",
-        horasRTEL: document.getElementById("rtel").value.trim(),
-        validacionEmpresa: "",
-        validacionProposito: "",
-        validacionDetalle: "",
-        resultadoHomologacion: "",
-        observaciones: "",
-        recomendadoHomologacion: ""
-    };
-
-    document.getElementById("migracionStatus").innerHTML = " Migrando datos a Google Sheets...";
-    
-    try {
-
-        const response = await fetch(GOOGLE_SHEETS_URL, {
-            method: 'POST',
-            mode: 'no-cors',
-            headers: { 
-                'Content-Type': 'application/json',
-            },
-            body: JSON.stringify(payload)
-        });
-
-        document.getElementById("migracionStatus").innerHTML = " ¡Datos migrados exitosamente! Verifica tu hoja de Google Sheets.";
-        document.getElementById("migracionStatus").style.color = "green";
+        // ⚠️⚠️⚠️ CAMBIA ESTA URL POR LA DE TU NUEVO APPS SCRIPT ⚠️⚠️⚠️
+        const GOOGLE_SHEETS_URL = "TU_NUEVA_URL_AQUI";
         
-        console.log("Payload enviado:", payload);
-        console.log("Verifica manualmente en: https://docs.google.com/spreadsheets/d/1tqjNa8lgw-H63fdOc7Q7TmYSGwvkMehrs6fGneV4A3U");
+        const payload = {
+            estado: "Pendiente",
+            ordenTrabajo: datosGenerados.ordenTrabajo,
+            empresaAlimentador: datosGenerados.company,
+            continuoDiario: datosGenerados.periodicidad,
+            tipoTrabajo: datosGenerados.trabajoTipo,
+            ingresadoPor: datosGenerados.responsable,
+            telefonoResponsable: "",
+            dispositivo: datosGenerados.actividad,
+            idPlanManiobras: `OT SGM ${datosGenerados.numOT}`,
+            trabajoEmergente: datosGenerados.emergencia,
+            fechaHoraInicio: datosGenerados.fechaInicio.replace('T', ' '),
+            fechaHoraFinalizacion: datosGenerados.fechaFin.replace('T', ' '),
+            tiempoOrdenTrabajo: datosGenerados.diffHoras + " horas",
+            fechaHoraRegistro: fechaRegistro,
+            proposito: datosGenerados.purpose,
+            detalles: datosGenerados.details,
+            notas: datosGenerados.notas,
+            razonDenegado: "",
+            horasRTEL: document.getElementById("rtel").value.trim(),
+            validacionEmpresa: "",
+            validacionProposito: "",
+            validacionDetalle: "",
+            resultadoHomologacion: "",
+            observaciones: "",
+            recomendadoHomologacion: ""
+        };
+
+        document.getElementById("migracionStatus").innerHTML = "⏳ Migrando datos a Google Sheets...";
+        document.getElementById("migracionStatus").style.color = "#003057";
         
-    } catch (error) {
-        console.error("Error detallado:", error);
-        document.getElementById("migracionStatus").innerHTML = ` Error al migrar: ${error.message}. Verifica la consola para más detalles.`;
-        document.getElementById("migracionStatus").style.color = "red";
+        try {
+            await fetch(GOOGLE_SHEETS_URL, {
+                method: 'POST',
+                mode: 'no-cors',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify(payload)
+            });
+
+            document.getElementById("migracionStatus").innerHTML = "✅ ¡Datos migrados exitosamente! Verifica tu hoja de Google Sheets.";
+            document.getElementById("migracionStatus").style.color = "green";
+            
+            console.log("✅ Payload enviado:", payload);
+            console.log("📊 Verifica tu hoja: https://docs.google.com/spreadsheets/d/1tqjNa8lgw-H63fdOc7Q7TmYSGwvkMehrs6fGneV4A3U");
+            
+        } catch (error) {
+            console.error("❌ Error:", error);
+            document.getElementById("migracionStatus").innerHTML = "❌ Error al migrar. Verifica la consola (F12).";
+            document.getElementById("migracionStatus").style.color = "red";
+        }
     }
-}
+
     function copiarCampo(texto) {
         navigator.clipboard.writeText(texto).then(() => {
             const notificacion = document.createElement('div');
-            notificacion.textContent = 'Copiado: ' + texto;
+            notificacion.textContent = '✅ Copiado: ' + texto.substring(0, 30) + '...';
             notificacion.className = 'notificacion-copiado';
             document.body.appendChild(notificacion);
             setTimeout(() => notificacion.remove(), 1500);
-        }).catch(err => alert(" Error al copiar: " + err));
+        }).catch(err => alert("❌ Error al copiar: " + err));
     }
 
     function resetFormulario() {
@@ -773,7 +762,8 @@ async function migrarASheets() {
     renderizarSelectorInstalacion();
     actualizarActividades();
     
-    console.log("WEB DMD MAE v2.1 - Sistema listo para migrar datos");
+    console.log("✅ WEB DMD MAE v3.0 - Sistema listo para migrar datos");
+    console.log("⚠️ Recuerda cambiar TU_NUEVA_URL_AQUI por la URL de tu nuevo Apps Script");
 </script>
 </body>
 </html>

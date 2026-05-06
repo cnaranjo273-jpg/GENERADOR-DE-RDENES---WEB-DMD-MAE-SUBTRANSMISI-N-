@@ -608,13 +608,23 @@
         const diffHoras = calcularDuracion();
         const purpose = `${currentCategoria}_${actividad} OT-${numOT}`;
         const details = `1.RTEL_${rtel} 2.${descLarga}`;
+        const telefonoResponsable = responsable.split(' ')[0];
 
         datosGenerados = {
-            responsable, company: currentCompany,
-            periodicidad, trabajoTipo: trabajoSelect, emergencia,
-            numOT, purpose, details, horasRTL: rtel, notas, actividad,
-            fechaInicio, fechaFin, diffHoras: diffHoras || 0,
-            ordenTrabajo: ""
+            ordenTrabajo: "",
+            company: currentCompany,
+            periodicidad,
+            trabajoTipo: trabajoSelect,
+            telefonoResponsable,
+            emergencia,
+            fechaInicio,
+            fechaFin,
+            diffHoras: diffHoras || 0,
+            fechaRegistro: "",
+            purpose,
+            details,
+            notas,
+            rtel
         };
 
         const resultDiv = document.getElementById("resultadoDetalles");
@@ -652,40 +662,28 @@
         }
 
         datosGenerados.ordenTrabajo = ordenTrabajo;
-        const fechaRegistro = new Date().toLocaleString('es-EC', { timeZone: 'America/Guayaquil' });
+        datosGenerados.fechaRegistro = new Date().toLocaleString('es-EC', { timeZone: 'America/Guayaquil' });
 
         const GOOGLE_SHEETS_URL = "https://script.google.com/macros/s/AKfycbxuVkNXaA_M0lSHqbL_QNLDt8nA_VG03wh2Jgk40c4CJUEOM8KpY0AqLvELuC5bDLXx/exec";
         
         const payload = {
-            estado: "Pendiente",
             ordenTrabajo: datosGenerados.ordenTrabajo,
             empresaAlimentador: datosGenerados.company,
             continuoDiario: datosGenerados.periodicidad,
             tipoTrabajo: datosGenerados.trabajoTipo,
-            ingresadoPor: datosGenerados.responsable,
-            telefonoResponsable: "",
-            dispositivo: datosGenerados.actividad,
-            idPlanManiobras: `OT SGM ${datosGenerados.numOT}`,
+            telefonoResponsable: datosGenerados.telefonoResponsable,
             trabajoEmergente: datosGenerados.emergencia,
             fechaHoraInicio: datosGenerados.fechaInicio.replace('T', ' '),
             fechaHoraFinalizacion: datosGenerados.fechaFin.replace('T', ' '),
             tiempoOrdenTrabajo: datosGenerados.diffHoras + " horas",
-            fechaHoraRegistro: fechaRegistro,
+            fechaHoraRegistro: datosGenerados.fechaRegistro,
             proposito: datosGenerados.purpose,
             detalles: datosGenerados.details,
-            horas: document.getElementById("rtel").value.trim(),
             notas: datosGenerados.notas,
-            razonDenegado: "",
-            horasRTEL: document.getElementById("rtel").value.trim(),
-            validacionEmpresa: "",
-            validacionProposito: "",
-            validacionDetalle: "",
-            resultadoHomologacion: "",
-            observaciones: "",
-            recomendadoHomologacion: ""
+            horasRTEL: datosGenerados.rtel
         };
 
-        document.getElementById("migracionStatus").innerHTML = "⏳ Migrando datos a Google Sheets...";
+        document.getElementById("migracionStatus").innerHTML = " Migrando datos a Google Sheets...";
         document.getElementById("migracionStatus").style.color = "#003057";
         
         try {
@@ -696,15 +694,15 @@
                 body: JSON.stringify(payload)
             });
 
-            document.getElementById("migracionStatus").innerHTML = "✅ ¡Datos migrados exitosamente! Verifica tu hoja de Google Sheets.";
+            document.getElementById("migracionStatus").innerHTML = " ¡Datos migrados exitosamente! Verifica tu hoja de Google Sheets.";
             document.getElementById("migracionStatus").style.color = "green";
             
-            console.log("✅ Payload enviado:", payload);
-            console.log("📊 Verifica tu hoja: https://docs.google.com/spreadsheets/d/1tqjNa8lgw-H63fdOc7Q7TmYSGwvkMehrs6fGneV4A3U");
+            console.log(" Payload enviado:", payload);
+            console.log(" Verifica tu hoja: https://docs.google.com/spreadsheets/d/1tqjNa8lgw-H63fdOc7Q7TmYSGwvkMehrs6fGneV4A3U");
             
         } catch (error) {
-            console.error("❌ Error:", error);
-            document.getElementById("migracionStatus").innerHTML = "❌ Error al migrar. Verifica la consola (F12).";
+            console.error(" Error:", error);
+            document.getElementById("migracionStatus").innerHTML = " Error al migrar. Verifica la consola (F12).";
             document.getElementById("migracionStatus").style.color = "red";
         }
     }
@@ -712,11 +710,11 @@
     function copiarCampo(texto) {
         navigator.clipboard.writeText(texto).then(() => {
             const notificacion = document.createElement('div');
-            notificacion.textContent = '✅ Copiado: ' + texto.substring(0, 30) + '...';
+            notificacion.textContent = ' Copiado: ' + texto.substring(0, 30) + '...';
             notificacion.className = 'notificacion-copiado';
             document.body.appendChild(notificacion);
             setTimeout(() => notificacion.remove(), 1500);
-        }).catch(err => alert("❌ Error al copiar: " + err));
+        }).catch(err => alert(" Error al copiar: " + err));
     }
 
     function resetFormulario() {
@@ -761,8 +759,22 @@
     renderizarSelectorInstalacion();
     actualizarActividades();
     
-    console.log("✅ WEB DMD MAE v3.1 - Sistema listo para migrar datos (Corregido)");
-    console.log("⚠️ Recuerda cambiar la URL del Apps Script si es necesario");
+    console.log(" WEB DMD MAE v4.0 - Sistema listo para migrar datos (Payload optimizado)");
+    console.log(" Campos que se envían a Google Sheets:");
+    console.log("   1. Orden Trabajo");
+    console.log("   2. Empresa/Alimentador");
+    console.log("   3. Continuo / Diario");
+    console.log("   4. Tipo Trabajo");
+    console.log("   5. Teléfono Responsable");
+    console.log("   6. Trabajo Emergente");
+    console.log("   7. Fecha Hora de inicio");
+    console.log("   8. Fecha Hora de finalización");
+    console.log("   9. Tiempo Orden de Trabajo (Horas)");
+    console.log("   10. Fecha hora de registro");
+    console.log("   11. Propósito");
+    console.log("   12. Detalles");
+    console.log("   13. Notas");
+    console.log("   14. Horas RTEL");
 </script>
 </body>
 </html>

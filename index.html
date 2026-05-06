@@ -259,6 +259,74 @@
             100% { opacity: 0; transform: translateY(-20px); }
         }
 
+        /* Estilos mejorados para el estado de migración */
+        .migration-status-success {
+            background: linear-gradient(135deg, #d4edda 0%, #c3e6cb 100%);
+            border: 2px solid #28a745;
+            border-radius: 16px;
+            padding: 20px;
+            margin-top: 15px;
+            text-align: center;
+            animation: slideIn 0.5s ease-out;
+        }
+
+        .migration-status-error {
+            background: linear-gradient(135deg, #f8d7da 0%, #f5c6cb 100%);
+            border: 2px solid #dc3545;
+            border-radius: 16px;
+            padding: 20px;
+            margin-top: 15px;
+            text-align: center;
+            animation: slideIn 0.5s ease-out;
+        }
+
+        .migration-status-loading {
+            background: linear-gradient(135deg, #fff3cd 0%, #ffeaa7 100%);
+            border: 2px solid #ffc107;
+            border-radius: 16px;
+            padding: 20px;
+            margin-top: 15px;
+            text-align: center;
+            animation: slideIn 0.5s ease-out;
+        }
+
+        .migration-icon {
+            font-size: 2.5rem;
+            margin-bottom: 10px;
+            display: block;
+        }
+
+        .migration-message {
+            font-size: 1.1rem;
+            font-weight: 600;
+            margin-bottom: 5px;
+        }
+
+        .migration-details {
+            font-size: 0.9rem;
+            opacity: 0.8;
+        }
+
+        @keyframes slideIn {
+            from {
+                opacity: 0;
+                transform: translateY(-20px);
+            }
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+
+        @keyframes pulse {
+            0%, 100% { transform: scale(1); }
+            50% { transform: scale(1.05); }
+        }
+
+        .pulse-animation {
+            animation: pulse 1.5s infinite;
+        }
+
         footer {
             background: #f2f5f9;
             text-align: center;
@@ -382,9 +450,9 @@
                     <label style="display: block; font-weight:600; margin-bottom: 5px;">ORDEN TRABAJO:</label>
                     <input type="text" id="ordenTrabajoInput" placeholder="Ingrese número de orden de trabajo" style="max-width: 300px;">
                 </div>
-                <button type="button" id="migrarBtn" class="btn-success" style="align-self: flex-end;">MIGRAR A GOOGLE SHEETS</button>
+                <button type="button" id="migrarBtn" class="btn-success" style="align-self: flex-end;">📤 MIGRAR A GOOGLE SHEETS</button>
             </div>
-            <div id="migracionStatus" style="margin-top: 10px; font-size: 0.9rem;"></div>
+            <div id="migracionStatus"></div>
         </div>
     </div>
     <footer>
@@ -639,7 +707,7 @@
             <div class="result-line"><span class="result-label">Duración (Horas):</span><span class="result-value">${diffHoras || 'N/A'}</span></div>
             <div class="result-line"><span class="result-label">Detalles:</span><span class="result-value">${details}</span><button class="btn-copiar-campo" onclick="copiarCampo('${details.replace(/'/g, "\\'")}')">COPIAR</button></div>
             <div class="result-line"><span class="result-label">Horas RTEL:</span><span class="result-value">${rtel}</span></div>
-            <div class="result-line"><span class="result-label">Notas:</span><span class="result-value">${notas}</span></div><button class="btn-copiar-campo" onclick="copiarCampo('${notas.replace(/'/g, "\\")}')">COPIAR<button></div>
+            <div class="result-line"><span class="result-label">Notas:</span><span class="result-value">${notas}</span><button class="btn-copiar-campo" onclick="copiarCampo('${notas.replace(/'/g, "\\'")}')">COPIAR</button></div>
             <div class="result-line"><span class="result-label">Emergencia:</span><span class="result-value">${emergencia}</span></div>
         `;
 
@@ -683,8 +751,13 @@
             horasRTEL: datosGenerados.rtel
         };
 
-        document.getElementById("migracionStatus").innerHTML = " Migrando datos a Google Sheets...";
-        document.getElementById("migracionStatus").style.color = "#003057";
+        document.getElementById("migracionStatus").innerHTML = `
+            <div class="migration-status-loading pulse-animation">
+                <span class="migration-icon"></span>
+                <div class="migration-message">Migrando datos a Google Sheets...</div>
+                <div class="migration-details">Por favor espere mientras se procesa la información</div>
+            </div>
+        `;
         
         try {
             await fetch(GOOGLE_SHEETS_URL, {
@@ -693,17 +766,34 @@
                 headers: { 'Content-Type': 'application/json' },
                 body: JSON.stringify(payload)
             });
+            document.getElementById("migracionStatus").innerHTML = `
+                <div class="migration-status-success">
+                    <span class="migration-icon"></span>
+                    <div class="migration-message">¡Migración Exitosa!</div>
+                    <div class="migration-details">
+                        Los datos se han enviado correctamente a Google Sheets<br>
+                        <strong>Orden de Trabajo:</strong> ${ordenTrabajo}<br>
+                        <strong>Empresa/Alimentador:</strong> ${datosGenerados.company}
+                    </div>
+                </div>
+            `;
 
-            document.getElementById("migracionStatus").innerHTML = " ¡Datos migrados exitosamente! Verifica tu hoja de Google Sheets.";
-            document.getElementById("migracionStatus").style.color = "green";
-            
+            document.getElementById("migracionStatus").scrollIntoView({ behavior: "smooth", block: "center" });
             console.log(" Payload enviado:", payload);
             console.log(" Verifica tu hoja: https://docs.google.com/spreadsheets/d/1tqjNa8lgw-H63fdOc7Q7TmYSGwvkMehrs6fGneV4A3U");
             
         } catch (error) {
             console.error(" Error:", error);
-            document.getElementById("migracionStatus").innerHTML = " Error al migrar. Verifica la consola (F12).";
-            document.getElementById("migracionStatus").style.color = "red";
+            document.getElementById("migracionStatus").innerHTML = `
+                <div class="migration-status-error">
+                    <span class="migration-icon"></span>
+                    <div class="migration-message">Error en la Migración</div>
+                    <div class="migration-details">
+                        No se pudo completar la migración de datos<br>
+                        Por favor, verifica la consola (F12) para más detalles
+                    </div>
+                </div>
+            `;
         }
     }
 

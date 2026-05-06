@@ -612,7 +612,7 @@
         datosGenerados = {
             responsable, company: currentCompany,
             periodicidad, trabajoTipo: trabajoSelect, emergencia,
-            numOT, purpose, details,horas: rtel, notas, actividad,
+            numOT, purpose, details, horasRTL: rtel, notas, actividad,
             fechaInicio, fechaFin, diffHoras: diffHoras || 0,
             ordenTrabajo: ""
         };
@@ -628,7 +628,7 @@
             <div class="result-line"><span class="result-label">Fecha Fin:</span><span class="result-value">${fechaFin.replace('T', ' ')}</span></div>
             <div class="result-line"><span class="result-label">Duración (Horas):</span><span class="result-value">${diffHoras || 'N/A'}</span></div>
             <div class="result-line"><span class="result-label">Detalles:</span><span class="result-value">${details}</span><button class="btn-copiar-campo" onclick="copiarCampo('${details.replace(/'/g, "\\'")}')">COPIAR</button></div>
-            <div class="result-line"><span class="result-label">Horas RTL:</span><span class="result-value">${horas}</span></div>
+            <div class="result-line"><span class="result-label">Horas RTEL:</span><span class="result-value">${rtel}</span></div>
             <div class="result-line"><span class="result-label">Notas:</span><span class="result-value">${notas}</span></div>
             <div class="result-line"><span class="result-label">Emergencia:</span><span class="result-value">${emergencia}</span></div>
         `;
@@ -673,7 +673,7 @@
             fechaHoraRegistro: fechaRegistro,
             proposito: datosGenerados.purpose,
             detalles: datosGenerados.details,
-            horas: datosGenerados.horas,
+            horas: document.getElementById("rtel").value.trim(),
             notas: datosGenerados.notas,
             razonDenegado: "",
             horasRTEL: document.getElementById("rtel").value.trim(),
@@ -761,8 +761,8 @@
     renderizarSelectorInstalacion();
     actualizarActividades();
     
-    console.log("✅ WEB DMD MAE v3.0 - Sistema listo para migrar datos");
-    console.log("⚠️ Recuerda cambiar TU_NUEVA_URL_AQUI por la URL de tu nuevo Apps Script");
+    console.log("✅ WEB DMD MAE v3.1 - Sistema listo para migrar datos (Corregido)");
+    console.log("⚠️ Recuerda cambiar la URL del Apps Script si es necesario");
 </script>
 </body>
 </html>

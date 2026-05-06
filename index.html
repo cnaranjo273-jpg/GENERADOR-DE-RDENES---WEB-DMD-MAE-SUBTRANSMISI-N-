@@ -606,14 +606,13 @@
         const fechaInicio = document.getElementById("fechaHoraInicio").value;
         const fechaFin = document.getElementById("fechaHoraFin").value;
         const diffHoras = calcularDuracion();
-        const horas = document.getElementById("Horas retraso telecom (RTEL)").value;
         const purpose = `${currentCategoria}_${actividad} OT-${numOT}`;
         const details = `1.RTEL_${rtel} 2.${descLarga}`;
 
         datosGenerados = {
             responsable, company: currentCompany,
             periodicidad, trabajoTipo: trabajoSelect, emergencia,
-            numOT, purpose, details,horas, notas, actividad,
+            numOT, purpose, details,horas: rtel, notas, actividad,
             fechaInicio, fechaFin, diffHoras: diffHoras || 0,
             ordenTrabajo: ""
         };
@@ -674,7 +673,7 @@
             fechaHoraRegistro: fechaRegistro,
             proposito: datosGenerados.purpose,
             detalles: datosGenerados.details,
-            horas: datosGenerados.horasRTL,
+            horas: datosGenerados.horas,
             notas: datosGenerados.notas,
             razonDenegado: "",
             horasRTEL: document.getElementById("rtel").value.trim(),
